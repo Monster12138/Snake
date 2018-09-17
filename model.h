@@ -28,4 +28,4 @@ typedef struct Game{
     unsigned int height;
 }Game;
 
-#endif 
+#endif
