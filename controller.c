@@ -1,8 +1,10 @@
 #include<stdio.h>
 #include<stdbool.h>
 #include<stdlib.h>
+#include<time.h>
 #include"model.h"
 #include"controller.h"
+#include"view.h"
 
 void SnakeInit(Snake *pSnake)
 {
@@ -28,7 +30,6 @@ bool IsOverLap(Position pos,Snake *pSnake)
     Node *cur = pSnake->tail;
     while(cur != NULL)
     {
-        printf("IsOverLap!\n");
         
         if(pos.x == cur->pos.x && pos.y == cur->pos.y)
             return true;
@@ -48,7 +49,6 @@ Position Generatefood(Game *game, Snake *pSnake)
 
     }while(IsOverLap(newfood,pSnake));
 
-    printf("Generatefood!\n");
     return newfood;
 }
 
@@ -81,11 +81,17 @@ Position GetNextPosition(Snake *pSnake)
 int main()
 {
     Game g;
+    srand((unsigned int)time(NULL));
 //  Snake s;
 //  SnakeInit(&s);
 //  printf("%x %x-%x-%x-%x\n",s.head,s.tail,s.tail->next,s.tail->next->next,s.head->next);
     GameInit(&g);
-//  DisPlayWall(g.width,g.height);
+    DisPlayWall(g.width,g.height);
+    while(1)
+    {
+        g.food = Generatefood(&g,&g.snake);
+        DisPlayFood(&g.food);
+    }
     printf("Init success!\n");
     return 0;
 }

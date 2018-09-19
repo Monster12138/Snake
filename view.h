@@ -1,3 +1,5 @@
+#include<unistd.h>
+#include"model.h"
 // 清除屏幕
 
 #define CLEAR() printf("\033[2J")
@@ -39,3 +41,6 @@
 #define HIGHT_LIGHT() printf("\033[7m")
 
 #define UN_HIGHT_LIGHT() printf("\033[27m")
+
+void DisPlayFood(Position *pos);
+void DisPlayWall(int width,int height);
