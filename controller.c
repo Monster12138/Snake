@@ -19,6 +19,7 @@ void SnakeInit(Snake *pSnake)
         node->next = pSnake->tail;
         pSnake->tail = node;
     }
+
     pSnake->Dir = RIGHT;
 }
 
@@ -27,8 +28,11 @@ bool IsOverLap(Position pos,Snake *pSnake)
     Node *cur = pSnake->tail;
     while(cur != NULL)
     {
+        printf("IsOverLap!\n");
+        
         if(pos.x == cur->pos.x && pos.y == cur->pos.y)
             return true;
+
         cur = cur->next;
     }
 
@@ -41,9 +45,11 @@ Position Generatefood(Game *game, Snake *pSnake)
     do{
         newfood.x = rand()%game->width;
         newfood.y = rand()%game->height;
+
     }while(IsOverLap(newfood,pSnake));
-    game->food.x = newfood.x;
-    game->food.y = newfood.y;
+
+    printf("Generatefood!\n");
+    return newfood;
 }
 
 void GameInit(Game *game)
@@ -51,8 +57,8 @@ void GameInit(Game *game)
     game->width = 28;
     game->height = 27;
 
-    Generatefood(game,&game->snake);
     SnakeInit(&game->snake);
+    game->food = Generatefood(game,&game->snake);
 }
 
 Position GetNextPosition(Snake *pSnake)
@@ -75,8 +81,11 @@ Position GetNextPosition(Snake *pSnake)
 int main()
 {
     Game g;
+//  Snake s;
+//  SnakeInit(&s);
+//  printf("%x %x-%x-%x-%x\n",s.head,s.tail,s.tail->next,s.tail->next->next,s.head->next);
     GameInit(&g);
-//    DisPlayWall(g.width,g.height);
+//  DisPlayWall(g.width,g.height);
     printf("Init success!\n");
     return 0;
 }
