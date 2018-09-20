@@ -44,3 +44,6 @@
 
 void DisPlayFood(Position *pos);
 void DisPlayWall(int width,int height);
+void DisPlaySnake(const Snake *snake);
+void DisPlaySnakeNode(const Position *pos);
+void CleanSnakeNode(const Position *pos);

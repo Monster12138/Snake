@@ -78,19 +78,59 @@ Position GetNextPosition(Snake *pSnake)
     return NextPos;
 }
 
+bool IsEat(const Position *food,const Snake *snake)
+{
+    return food->x == snake->head->pos.x 
+        && food->y == snake->head->pos.y;
+}
+
+void HeadAdd(Snake *snake, const Position *next)
+{
+    Node *NewNode = (Node *)malloc(sizeof(Node));
+    NewNode->pos.x = next->x;
+    NewNode->pos.y = next->y;
+
+    NewNode->next = NULL;
+    snake->head->next = NewNode;
+    snake->head = NewNode;;
+
+    DisPlaySnakeNode(&NewNode->pos);
+}
+
+void RemoveTail(Snake *snake)
+{
+    Node *cur = snake->tail;
+    if(snake->tail)
+        snake->tail = snake->tail->next;
+    
+    CleanSnakeNode(&cur->pos);
+    free(cur);
+}
+
+bool KilledByWall(const Snake *snake, int width, int height)
+{
+    //To write
+    return false;
+}
+
+bool KilledBySelf(const Snake *snake)
+{
+    //To write
+    return false;
+}
+
 int main()
 {
     Game g;
     srand((unsigned int)time(NULL));
-//  Snake s;
-//  SnakeInit(&s);
-//  printf("%x %x-%x-%x-%x\n",s.head,s.tail,s.tail->next,s.tail->next->next,s.head->next);
     GameInit(&g);
     DisPlayWall(g.width,g.height);
     while(1)
     {
         g.food = Generatefood(&g,&g.snake);
         DisPlayFood(&g.food);
+        DisPlaySnake(&g.snake);
+        usleep(2);
     }
     printf("Init success!\n");
     return 0;

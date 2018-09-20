@@ -9,7 +9,7 @@ void DisPlayWall(int width,int height)
 
     MOVETO(0,0);
     //上
-    for(int i = 0;i < 2*(width + 1); i++)
+    for(int i = 0;i < 2*width; i++)
     {
         printf("■");
     }
@@ -22,12 +22,12 @@ void DisPlayWall(int width,int height)
     //右
     for(int i = 0;i < height + 2; i++)
     {
-        MOVETO(i, 2 *(width + 1));
+        MOVETO(i, 2 *width);
         printf("■");
     }
     //下
     MOVETO(height+1, 0);
-    for(int i = 0;i <2*( width + 1); i++)
+    for(int i = 0;i <2*width; i++)
     {
         printf("■");
     }
@@ -37,7 +37,32 @@ void DisPlayWall(int width,int height)
 
 void DisPlayFood(Position *pos)
 {
-    MOVETO(pos->x,2*(pos->y));
+    MOVETO(pos->x,2*(pos->y + 1));
 
     printf("■");
+}
+
+void DisPlaySnake(const Snake *snake)
+{
+    Node *cur = snake->tail;
+    while(cur)
+    {
+        int x = cur->pos.x;
+        int y = cur->pos.y;
+        MOVETO(x,2 * (y + 1));
+        printf("□ ");
+        cur = cur->next;
+    }
+}
+
+void DisPlaySnakeNode(const Position *pos)
+{
+    MOVETO(pos->x, 2 * (pos->y + 1));
+    printf("□ ");
+}
+
+void CleanSnakeNode(const Position *pos)
+{
+    MOVETO(pos->x, 2 * (pos->y + 1));
+    printf("  ");
 }
