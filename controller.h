@@ -10,7 +10,7 @@ void SnakeInit(Snake *pSnake);
 bool IsOverLap(Position pos,Snake *pSnake);
 
 //随机刷新食物
-Position Generatefood(Game *game, Snake *pSnake);
+Position Generatefood(Game *game);
 
 //初始化游戏
 void GameInit(Game *game);
