@@ -130,8 +130,10 @@ void RemoveTail(Snake *snake)
 
 bool KilledByWall(const Snake *snake, int width, int height)
 {
-    return snake->head->pos.x >= width
-        || snake->head->pos.y >= height;
+    return snake->head->pos.x >= height + 1
+        || snake->head->pos.y >= width
+        || snake->head->pos.x <= 1
+        || snake->head->pos.y <= 0;
 }
 
 bool KilledBySelf(const Snake *snake)
@@ -170,9 +172,8 @@ void GameRun(Game *game)
     food = Generatefood(game);
     while(!GameOver(game))
     {
+        DisPlaySnake(&game->snake);
         input = scanKeyboard();
-        MOVETO(0,0);
-        printf("%d\n", input);
         switch(input)
         {
         case 65:{
@@ -198,7 +199,8 @@ void GameRun(Game *game)
         default:continue;
         }
         NextPos = GetNextPosition(&game->snake);
-
+        MOVETO(0,0);
+        printf("%d,%d",game->snake.head->pos.x,game->snake.head->pos.y);
         HeadAdd(&game->snake, &NextPos); 
 
         if(IsEat(&food, &game->snake))
