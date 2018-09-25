@@ -18,6 +18,7 @@ typedef struct Node{
 typedef struct Snake{
     Node *head;
     Node *tail;
+    unsigned int length;
     Direction Dir;
 } Snake;
 
@@ -27,5 +28,19 @@ typedef struct Game{
     unsigned int width;
     unsigned int height;
 }Game;
+
+typedef enum Speed_Level{
+    ZERO,
+    ONE,
+    TWO,
+    THR,
+    FOU,
+    FIV,
+    SIX,
+    SEN,
+    EIG,
+    NIG,
+    TEN
+}Speed_Level;
 
 #endif

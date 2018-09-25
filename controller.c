@@ -3,9 +3,16 @@
 #include<stdlib.h>
 #include<time.h>
 #include<termio.h>
+#include<unistd.h>
 #include"model.h"
 #include"controller.h"
 #include"view.h"
+#include<stdio.h>
+#include <stdlib.h>
+
+#define TTY_PATH            "/dev/tty"
+#define STTY_US             "stty raw -echo -F "
+#define STTY_DEF            "stty -raw echo -F "
 
 int scanKeyboard()
 {
@@ -34,7 +41,7 @@ void SnakeInit(Snake *pSnake)
         Node *node = (Node *)malloc(sizeof(Node));
         node->pos.x = 5+i;
         node->pos.y = 2;
-
+        
         if(i == 0)
             pSnake->head = node;
 
@@ -42,6 +49,7 @@ void SnakeInit(Snake *pSnake)
         pSnake->tail = node;
     }
 
+    pSnake->length = 3;
     pSnake->Dir = RIGHT;
 }
 
@@ -160,6 +168,26 @@ bool GameOver(Game *game)
         || KilledByWall(&game->snake, game->width, game->height);
 }
 
+static int get_char()
+{
+    fd_set rfds;
+    struct timeval tv;
+    int ch = 0;
+
+    FD_ZERO(&rfds);
+    FD_SET(0, &rfds);
+    tv.tv_sec = 0;
+    tv.tv_usec = 1; //设置等待超时时间
+
+    //检测键盘是否有输入
+    if (select(1, &rfds, NULL, NULL, &tv) > 0)
+    {
+        ch = getchar();
+    }
+
+    return ch;
+}
+
 //UP 103
 //LEFT 105
 //RIGHT 106
@@ -168,39 +196,40 @@ bool GameOver(Game *game)
 void GameRun(Game *game)
 {
     Position NextPos, food;
-    int input = 106;
+    int speed = ONE;
+    int input = 0;
     food = Generatefood(game);
     while(!GameOver(game))
     {
         DisPlaySnake(&game->snake);
-        input = scanKeyboard();
+        input = get_char();
         switch(input)
         {
-        case 65:{
+        case 119:{
                     if(game->snake.Dir != DOWN)
                         game->snake.Dir = UP;
                     break;
                 }
-        case 68:{
+        case 97:{
                     if(game->snake.Dir != RIGHT)
                         game->snake.Dir = LEFT;
                     break;
                 }
-        case 67:{
+        case 100:{
                     if(game->snake.Dir != LEFT)
-                        game->snake.Dir = RIGHT;
+                       game->snake.Dir = RIGHT;
                     break;
                 }
-        case 66:{
+        case 115:{
                     if(game->snake.Dir != UP)
                         game->snake.Dir = DOWN;
                     break;
                 }
-        default:continue;
+        default:break;
         }
         NextPos = GetNextPosition(&game->snake);
-        MOVETO(0,0);
-        printf("%d,%d",game->snake.head->pos.x,game->snake.head->pos.y);
+//        MOVETO(0,0);
+//        printf("%d,%d",game->snake.head->pos.x,game->snake.head->pos.y);
         HeadAdd(&game->snake, &NextPos); 
 
         if(IsEat(&food, &game->snake))
@@ -209,15 +238,26 @@ void GameRun(Game *game)
             RemoveTail(&game->snake);
 
         DisPlaySnake(&game->snake);
+        MOVETO(0,0);
+//        printf("■");
+
+        printf("%d:%d\n",input,input);
+        usleep(500000);
     }
 }
 
+
 int main()
 {
+    system(STTY_US TTY_PATH);
+    system("stty -icanon"); 
+
     Game g;
     srand((unsigned int)time(NULL));
     GameInit(&g);
     DisPlayWall(g.width,g.height);
     GameRun(&g);
+
+    system(STTY_DEF TTY_PATH);
     return 0;
 }
