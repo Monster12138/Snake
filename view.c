@@ -7,26 +7,27 @@ void DisPlayWall(int width,int height)
     CLEAR();
     HIDE_CURSOR();
 
+     //左
+    for(int i = 0;i < height; i++)
+    {
+        MOVETO(i, 0);
+        printf("■ ");
+    }
+    //右
+    for(int i = 0;i < height; i++)
+    {
+        MOVETO(i, 2 *width);
+        printf("■ ");
+    }
     MOVETO(0,0);
     //上
     for(int i = 0;i < 2*width; i++)
     {
         printf("■");
     }
-    //左
-    for(int i = 0;i < height + 2; i++)
-    {
-        MOVETO(i, 0);
-        printf("■");
-    }
-    //右
-    for(int i = 0;i < height + 2; i++)
-    {
-        MOVETO(i, 2 *width);
-        printf("■");
-    }
+
     //下
-    MOVETO(height+1, 0);
+    MOVETO(height, 0);
     for(int i = 0;i <2*width; i++)
     {
         printf("■");
@@ -37,9 +38,9 @@ void DisPlayWall(int width,int height)
 
 void DisPlayFood(Position *pos)
 {
-    MOVETO(pos->x,2*(pos->y + 1));
+    MOVETO(pos->x,2*pos->y);
 
-    printf("■");
+    printf("★ ");
 }
 
 void DisPlaySnake(const Snake *snake)
@@ -49,7 +50,7 @@ void DisPlaySnake(const Snake *snake)
     {
         int x = cur->pos.x;
         int y = cur->pos.y;
-        MOVETO(x,2 * (y + 1));
+        MOVETO(x,2 * y);
         printf("□ ");
         cur = cur->next;
     }
@@ -57,12 +58,52 @@ void DisPlaySnake(const Snake *snake)
 
 void DisPlaySnakeNode(const Position *pos)
 {
-    MOVETO(pos->x, 2 * (pos->y + 1));
+    MOVETO(pos->x, 2 * (pos->y));
     printf("□ ");
 }
 
 void CleanSnakeNode(const Position *pos)
 {
-    MOVETO(pos->x, 2 * (pos->y + 1));
+    MOVETO(pos->x, 2 * (pos->y));
     printf("  ");
+}
+
+void DisPlayFoodPos(const Game *game)
+{
+    MOVETO(game->height/3,2 * game->width + 6);
+    printf("Food Position:[%d,%d]",game->food.x,game->food.y);
+}
+
+void DisPlayHeadPos(const Game *game)
+{
+    MOVETO(game->height/3 + 2,2 * game->width + 6);
+    printf("Snake Head Position:[%d,%d]\n",game->snake.head->pos.x,game->snake.head->pos.y);
+}
+
+void DisPlayPressKey(Game *game,const int key)
+{
+    MOVETO(game->height - 4,2 * game->width + 8);
+    //↑↓←→
+    if(key == 119)
+        printf("↑ ");
+    else 
+        printf("◆ ");
+
+    MOVETO(game->height - 3,2 * game->width + 6);
+    if(key == 97)
+        printf("← ");
+    else 
+        printf("◆ ");
+    
+    MOVETO(game->height - 3,2 * game->width + 10);
+    if(key == 100)
+        printf("→ ");
+    else 
+        printf("◆ ");
+
+    MOVETO(game->height - 2,2 * game->width + 8);
+    if(key == 115)
+        printf("↓ ");
+    else 
+        printf("◆ ");
 }

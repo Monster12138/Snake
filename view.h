@@ -46,3 +46,12 @@ void DisPlaySnakeNode(const Position *pos);
 
 //清除结点
 void CleanSnakeNode(const Position *pos);
+
+//显示蛇头位置
+void DisPlayHeadPos(const Game *game);
+
+//显示食物位置
+void DisPlayFoodPos(const Game *game);
+
+//显示按键
+void DisPlayPressKey(Game *game,const int key);
