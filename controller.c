@@ -7,12 +7,25 @@
 #include"model.h"
 #include"controller.h"
 #include"view.h"
-#include<stdio.h>
 #include <stdlib.h>
 
 #define TTY_PATH            "/dev/tty"
 #define STTY_US             "stty raw -echo -F "
 #define STTY_DEF            "stty -raw echo -F "
+
+void Pause(Game *game)
+{
+    char pauseMes[] =  "Press any key to continue";
+    DisPlayMessage(game,pauseMes);
+    struct termios te;
+    tcgetattr( STDIN_FILENO,&te);
+    te.c_lflag &=~( ICANON|ECHO);
+    tcsetattr(STDIN_FILENO,TCSANOW,&te);
+    tcflush(STDIN_FILENO,TCIFLUSH);
+    fgetc(stdin) ;
+    te.c_lflag |=( ICANON|ECHO);
+    tcsetattr(STDIN_FILENO,TCSANOW,&te);
+}
 
 int scanKeyboard()
 {
@@ -197,7 +210,8 @@ static int get_char()
 
 void GameRun(Game *game)
 {
-    Position NextPos, food;
+    Position NextPos;
+    char message[20] = "";
     bool flag = 0;
     int input = 0;
     game->food = Generatefood(game);
@@ -208,11 +222,8 @@ void GameRun(Game *game)
         input = get_char();
         switch(input)
         {
-        case 119:{
-                    if(game->snake.Dir == UP)
-                        flag = 0;
-                    else if(game->snake.Dir != DOWN)
-                        game->snake.Dir = UP;
+        case 32:{
+                    Pause(game);
                     break;
                 }
         case 97:{
@@ -239,6 +250,13 @@ void GameRun(Game *game)
                         game->snake.Dir = DOWN;
                     break;
                 }
+        case 119:{
+                    if(game->snake.Dir == UP)
+                        flag = 0;
+                    else if(game->snake.Dir != DOWN)
+                        game->snake.Dir = UP;
+                    break;
+                }
         default:break;
         }
         NextPos = GetNextPosition(&game->snake);
@@ -257,6 +275,7 @@ void GameRun(Game *game)
         DisPlayFoodPos(game);
         DisPlayHeadPos(game);
         DisPlayPressKey(game,input);
+        DisPlayMessage(game, message);
         if(flag)usleep(500000);
         else usleep(50000);
 //      usleep(500000);

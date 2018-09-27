@@ -107,3 +107,12 @@ void DisPlayPressKey(Game *game,const int key)
     else 
         printf("◆ ");
 }
+
+void DisPlayMessage(Game *game,const char *message)
+{
+    MOVETO(game->height + 4, game->width + 6);
+    printf("--------------");
+
+    MOVETO(game->height + 6, game->width + 6);
+    printf("    %s",message);
+}

@@ -55,3 +55,6 @@ void DisPlayFoodPos(const Game *game);
 
 //显示按键
 void DisPlayPressKey(Game *game,const int key);
+
+//显示提示信息
+void DisPlayMessage(Game *game,const char *message);
