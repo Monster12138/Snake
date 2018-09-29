@@ -15,16 +15,21 @@
 
 void Pause(Game *game)
 {
+    tcflag_t tmp;
     char pauseMes[] =  "Press any key to continue";
     DisPlayMessage(game,pauseMes);
     struct termios te;
     tcgetattr( STDIN_FILENO,&te);
+    tmp = te.c_lflag;
     te.c_lflag &=~( ICANON|ECHO);
     tcsetattr(STDIN_FILENO,TCSANOW,&te);
     tcflush(STDIN_FILENO,TCIFLUSH);
     fgetc(stdin) ;
     te.c_lflag |=( ICANON|ECHO);
     tcsetattr(STDIN_FILENO,TCSANOW,&te);
+    te.c_lflag = tmp;
+    system(STTY_US TTY_PATH);
+    system("stty -icanon"); 
 }
 
 int scanKeyboard()
@@ -224,6 +229,7 @@ void GameRun(Game *game)
         {
         case 32:{
                     Pause(game);
+                    CleanMessage(game);
                     break;
                 }
         case 97:{

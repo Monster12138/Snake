@@ -58,3 +58,6 @@ void DisPlayPressKey(Game *game,const int key);
 
 //显示提示信息
 void DisPlayMessage(Game *game,const char *message);
+
+//清除提示信息
+void CleanMessage(Game *game);

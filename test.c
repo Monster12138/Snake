@@ -13,6 +13,8 @@ int main()
     te.c_lflag |=( ICANON|ECHO);
     tcsetattr(STDIN_FILENO,TCSANOW,&te);
     printf("Hello world\n");
+    int a;
+    scanf("%d",&a);
     return 0;
 }
 
