@@ -64,3 +64,9 @@ void CleanMessage(Game *game);
 
 //显示蛇身长度和速度
 void DisPlayL_S(Game *game, int speed);
+
+//显示菜单
+void DisPlayMenu(Game *game);
+
+//清除菜单
+void CleanMenu(Game *game);

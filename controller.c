@@ -112,6 +112,7 @@ void GameInit(Game *game)
 {
     game->width = 28;
     game->height = 27;
+    game->score = 0;
 
     SnakeInit(&game->snake);
     game->food = Generatefood(game);
@@ -240,7 +241,7 @@ int SpeedCtrl(unsigned int length)
 void GameRun(Game *game)
 {
     Position NextPos;
-    char message[20] = "";
+    char message[50] = "";
     bool flag = 0;
     int speed = 10;
     int input = 0;
@@ -298,6 +299,7 @@ void GameRun(Game *game)
 
         if(IsEat(&game->food, &game->snake)){
             game->food = Generatefood(game);
+            game->score+=10;
             game->snake.length++;
         }
         else
@@ -319,11 +321,54 @@ void GameRun(Game *game)
 //      usleep(500000);
     }
 
-    strcpy(message, "Game Over!");
+    strcpy(message, "Game Over!Press any key to return menu");
     DisPlayMessage(game, message);
-    MOVETO(game->height + 1, 0);
+
+    getchar();
 }
 
+void GameQuit(Game *game)
+{
+    ;
+}
+
+void menu(Game *game)
+{
+    char ch = 1;
+    while(ch != '0')
+    {
+        GameInit(game);
+        DisPlayMenu(game);
+
+        ch = getchar();
+        CleanMenu(game);
+        switch(ch)
+        {
+        case '0':{
+                    GameQuit(game);
+                    break;
+                 }
+        case '1':{
+                    GameRun(game);
+                    break;
+                 }
+        case '2':{
+                     //GameLoad(game);
+                     GameRun(game);
+                     break;
+                 }
+        case '3':{
+                     //ScoreRead(game);
+                     break;
+                 }
+        default:{
+                    break;
+                }
+        }
+    }
+
+    MOVETO(game->height + 2, 0);
+}
 
 int main()
 {
@@ -334,9 +379,8 @@ int main()
 
     Game g;
     srand((unsigned int)time(NULL));
-    GameInit(&g);
-    DisPlayWall(g.width,g.height);
-    GameRun(&g);
+    
+    menu(&g);
 
     system(STTY_DEF TTY_PATH);
     return 0;

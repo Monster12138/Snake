@@ -27,20 +27,8 @@ typedef struct Game{
     Snake snake;
     unsigned int width;
     unsigned int height;
+    unsigned int score;
+    unsigned int highest_score;
 }Game;
-
-typedef enum Speed_Level{
-    ZERO,
-    ONE,
-    TWO,
-    THR,
-    FOU,
-    FIV,
-    SIX,
-    SEN,
-    EIG,
-    NIG,
-    TEN
-}Speed_Level;
 
 #endif

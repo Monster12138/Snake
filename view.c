@@ -32,8 +32,9 @@ void DisPlayWall(int width,int height)
     {
         printf("■");
     }
- 
-    MOVETO(height + 2, 0);
+
+    MOVETO(height - 10,2 * width + 6);
+    printf("------------------------------------");
 }
 
 void DisPlayFood(Position *pos)
@@ -110,9 +111,6 @@ void DisPlayPressKey(Game *game,const int key)
 
 void DisPlayMessage(Game *game,const char *message)
 {
-    MOVETO(game->height - 10,2 * game->width + 6);
-    printf("---------------------------");
-
     MOVETO(game->height - 8, 2 *  game->width + 6);
     printf(" %s\n",message);
 }
@@ -120,7 +118,7 @@ void DisPlayMessage(Game *game,const char *message)
 void CleanMessage(Game *game)
 {
     MOVETO(game->height - 8,2 *  game->width + 6);
-    printf("                                   ");
+    printf("                                        ");
 }
 
 void DisPlayL_S(Game *game, int speed)
@@ -130,5 +128,47 @@ void DisPlayL_S(Game *game, int speed)
 
     MOVETO(game->height/3 + 2,2 * game->width + 6);
     printf("Speed:  %d m/s", speed);
+
+    MOVETO(game->height/3 + 4,2 * game->width + 6);
+    printf("Score:  %d",game->score);
+
+    MOVETO(game->height/3 + 6,2 * game->width + 6);
+    printf("Highest Score:  %d",game->highest_score);
 }
 
+void DisPlayMenu(Game *game)
+{
+    char message[] = "Please enter an option with keyboard";
+    DisPlayWall(game->width, game->height);
+
+    MOVETO(game->height/3, game->width - 2);
+    printf("1.开始新游戏");
+
+    MOVETO(game->height/3 + 2, game->width - 2);
+    printf("2.继续游戏");
+
+    MOVETO(game->height/3 + 4, game->width - 2);
+    printf("3.排行榜");
+
+    MOVETO(game->height/3 + 6, game->width - 2);
+    printf("0.退出游戏");
+
+    DisPlayMessage(game, message);
+}
+
+void CleanMenu(Game *game)
+{
+    MOVETO(game->height/3, game->width - 2);
+    printf("              ");
+
+    MOVETO(game->height/3 + 2, game->width - 2);
+    printf("              ");
+
+    MOVETO(game->height/3 + 4, game->width - 2);
+    printf("              ");
+
+    MOVETO(game->height/3 + 6, game->width - 2);
+    printf("              ");
+
+    CleanMessage(game);
+}
