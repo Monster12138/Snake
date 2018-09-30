@@ -1,4 +1,5 @@
 #include<stdio.h>
+#include<string.h>
 #include<stdbool.h>
 #include<stdlib.h>
 #include<time.h>
@@ -13,6 +14,7 @@
 #define STTY_US             "stty raw -echo -F "
 #define STTY_DEF            "stty -raw echo -F "
 
+//暂停
 void Pause(Game *game)
 {
     tcflag_t tmp;
@@ -32,6 +34,7 @@ void Pause(Game *game)
     system("stty -icanon"); 
 }
 
+//键盘监视
 int scanKeyboard()
 {
     int in;
@@ -51,6 +54,7 @@ int scanKeyboard()
     return in;
 }
 
+//初始化蛇身
 void SnakeInit(Snake *pSnake)
 {
     pSnake->tail = NULL;
@@ -71,6 +75,7 @@ void SnakeInit(Snake *pSnake)
     pSnake->Dir = RIGHT;
 }
 
+//检查食物是否刷新在蛇身上
 bool IsOverLap(Position pos,Snake *pSnake)
 {
     if(pos.x <= 1 || pos.y <= 0)
@@ -88,6 +93,7 @@ bool IsOverLap(Position pos,Snake *pSnake)
     return false;
 }
 
+//随机生成食物的位置
 Position Generatefood(Game *game)
 {
     Position newfood;
@@ -101,6 +107,7 @@ Position Generatefood(Game *game)
     return newfood;
 }
 
+//游戏初始化
 void GameInit(Game *game)
 {
     game->width = 28;
@@ -110,6 +117,7 @@ void GameInit(Game *game)
     game->food = Generatefood(game);
 }
 
+//获得蛇头下一步的坐标
 Position GetNextPosition(Snake *pSnake)
 {
     Position NextPos;
@@ -127,12 +135,14 @@ Position GetNextPosition(Snake *pSnake)
     return NextPos;
 }
 
+//判断蛇是否吃到食物
 bool IsEat(const Position *food,const Snake *snake)
 {
     return food->x == snake->head->pos.x 
         && food->y == snake->head->pos.y;
 }
 
+//蛇头增加1个结点
 void HeadAdd(Snake *snake, const Position *next)
 {
     Node *NewNode = (Node *)malloc(sizeof(Node));
@@ -146,6 +156,7 @@ void HeadAdd(Snake *snake, const Position *next)
     DisPlaySnakeNode(&NewNode->pos);
 }
 
+//蛇尾去掉一个结点
 void RemoveTail(Snake *snake)
 {
     Node *cur = snake->tail;
@@ -156,6 +167,7 @@ void RemoveTail(Snake *snake)
     free(cur);
 }
 
+//判断是否撞墙
 bool KilledByWall(const Snake *snake, int width, int height)
 {
     return snake->head->pos.x >= height
@@ -164,6 +176,7 @@ bool KilledByWall(const Snake *snake, int width, int height)
         || snake->head->pos.y <= 0;
 }
 
+//判断是否撞到自己的身体
 bool KilledBySelf(const Snake *snake)
 {
     Node *head = snake->head;
@@ -182,12 +195,14 @@ bool KilledBySelf(const Snake *snake)
     return false;
 }
 
+//判断游戏是否结束
 bool GameOver(Game *game)
 {
     return KilledBySelf(&game->snake)
         || KilledByWall(&game->snake, game->width, game->height);
 }
 
+//接受键盘输入
 static int get_char()
 {
     fd_set rfds;
@@ -208,16 +223,26 @@ static int get_char()
     return ch;
 }
 
+int SpeedCtrl(unsigned int length)
+{
+    if(length < 100)
+        return (10 - length/10);
+
+    return 1;
+}
+
 //UP 103
 //LEFT 105
 //RIGHT 106
 //DOWN 108
 
+//游戏开始
 void GameRun(Game *game)
 {
     Position NextPos;
     char message[20] = "";
     bool flag = 0;
+    int speed = 10;
     int input = 0;
     game->food = Generatefood(game);
     while(!GameOver(game))
@@ -265,34 +290,47 @@ void GameRun(Game *game)
                 }
         default:break;
         }
+
         NextPos = GetNextPosition(&game->snake);
 //        MOVETO(0,0);
 //        printf("%d,%d",game->snake.head->pos.x,game->snake.head->pos.y);
         HeadAdd(&game->snake, &NextPos); 
 
-        if(IsEat(&game->food, &game->snake))
+        if(IsEat(&game->food, &game->snake)){
             game->food = Generatefood(game);
+            game->snake.length++;
+        }
         else
             RemoveTail(&game->snake);
 
-        DisPlaySnake(&game->snake);
+//        DisPlaySnake(&game->snake);
 
 //      printf("%d:%d\n",input,input);
-        DisPlayFoodPos(game);
-        DisPlayHeadPos(game);
+//      DisPlayFoodPos(game);
+//      DisPlayHeadPos(game);
         DisPlayPressKey(game,input);
         DisPlayMessage(game, message);
-        if(flag)usleep(500000);
+
+        speed = SpeedCtrl(game->snake.length);
+
+        DisPlayL_S(game,10 - speed + 1);
+        if(flag)usleep(speed * 5 * 10000);
         else usleep(50000);
 //      usleep(500000);
     }
+
+    strcpy(message, "Game Over!");
+    DisPlayMessage(game, message);
+    MOVETO(game->height + 1, 0);
 }
 
 
 int main()
 {
     system(STTY_US TTY_PATH);
-    system("stty -icanon"); 
+    system("stty -icanon");
+    //清除输入缓存区
+    setbuf(stdin, NULL);
 
     Game g;
     srand((unsigned int)time(NULL));

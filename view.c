@@ -114,11 +114,21 @@ void DisPlayMessage(Game *game,const char *message)
     printf("---------------------------");
 
     MOVETO(game->height - 8, 2 *  game->width + 6);
-    printf(" %s",message);
+    printf(" %s\n",message);
 }
 
 void CleanMessage(Game *game)
 {
     MOVETO(game->height - 8,2 *  game->width + 6);
-    printf("                     ");
+    printf("                                   ");
 }
+
+void DisPlayL_S(Game *game, int speed)
+{
+    MOVETO(game->height/3,2 * game->width + 6);
+    printf("Length: %d m", game->snake.length);
+
+    MOVETO(game->height/3 + 2,2 * game->width + 6);
+    printf("Speed:  %d m/s", speed);
+}
+

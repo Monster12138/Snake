@@ -61,3 +61,6 @@ void DisPlayMessage(Game *game,const char *message);
 
 //清除提示信息
 void CleanMessage(Game *game);
+
+//显示蛇身长度和速度
+void DisPlayL_S(Game *game, int speed);
