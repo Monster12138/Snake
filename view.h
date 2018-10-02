@@ -68,5 +68,11 @@ void DisPlayL_S(Game *game, int speed);
 //显示菜单
 void DisPlayMenu(Game *game);
 
-//清除菜单
-void CleanMenu(Game *game);
+//刷新地图
+void RefreshMap(Game *game);
+
+//显示是否再来一局
+void DisPlayPlayAgain(Game *game);
+
+//显示游戏退出信息
+void DisPlayQuit(Game *game);

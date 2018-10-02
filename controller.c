@@ -116,6 +116,8 @@ void GameInit(Game *game)
 
     SnakeInit(&game->snake);
     game->food = Generatefood(game);
+
+    RefreshMap(game);
 }
 
 //获得蛇头下一步的坐标
@@ -232,6 +234,34 @@ int SpeedCtrl(unsigned int length)
     return 1;
 }
 
+bool PlayAgain(Game *game)
+{
+    DisPlayPlayAgain(game);
+    bool b = true;
+
+    char ch = getchar();
+    switch(ch)
+    {
+    case 'Y':
+    case 'y':{
+                 b = true;
+                 break;
+             }
+    case 'N':
+    case 'n':{
+                 b = false;
+                 break;
+             }
+    default:{
+                b = PlayAgain(game);
+                break;
+            }
+    }
+
+    return b;
+}
+
+
 //UP 103
 //LEFT 105
 //RIGHT 106
@@ -325,11 +355,11 @@ void GameRun(Game *game)
     DisPlayMessage(game, message);
 
     getchar();
-}
 
-void GameQuit(Game *game)
-{
-    ;
+    if(PlayAgain(game)){
+        GameInit(game);
+        GameRun(game);
+    }
 }
 
 void menu(Game *game)
@@ -341,11 +371,12 @@ void menu(Game *game)
         DisPlayMenu(game);
 
         ch = getchar();
-        CleanMenu(game);
+        RefreshMap(game);
         switch(ch)
         {
         case '0':{
-                    GameQuit(game);
+                    DisPlayQuit(game);
+                    getchar();
                     break;
                  }
         case '1':{

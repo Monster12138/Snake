@@ -32,9 +32,6 @@ void DisPlayWall(int width,int height)
     {
         printf("■");
     }
-
-    MOVETO(height - 10,2 * width + 6);
-    printf("------------------------------------");
 }
 
 void DisPlayFood(Position *pos)
@@ -141,34 +138,39 @@ void DisPlayMenu(Game *game)
     char message[] = "Please enter an option with keyboard";
     DisPlayWall(game->width, game->height);
 
-    MOVETO(game->height/3, game->width - 2);
+    MOVETO(game->height/3, game->width - 4);
     printf("1.开始新游戏");
 
-    MOVETO(game->height/3 + 2, game->width - 2);
+    MOVETO(game->height/3 + 2, game->width - 4);
     printf("2.继续游戏");
 
-    MOVETO(game->height/3 + 4, game->width - 2);
+    MOVETO(game->height/3 + 4, game->width - 4);
     printf("3.排行榜");
 
-    MOVETO(game->height/3 + 6, game->width - 2);
+    MOVETO(game->height/3 + 6, game->width - 4);
     printf("0.退出游戏");
 
     DisPlayMessage(game, message);
 }
 
-void CleanMenu(Game *game)
+void RefreshMap(Game *game)
 {
-    MOVETO(game->height/3, game->width - 2);
-    printf("              ");
-
-    MOVETO(game->height/3 + 2, game->width - 2);
-    printf("              ");
-
-    MOVETO(game->height/3 + 4, game->width - 2);
-    printf("              ");
-
-    MOVETO(game->height/3 + 6, game->width - 2);
-    printf("              ");
-
+    DisPlayWall(game->width, game->height);
     CleanMessage(game);
+}
+
+void DisPlayPlayAgain(Game *game)
+{
+    MOVETO(game->height/3 + 2, game->width - 4);
+    printf("再来一局？");
+
+    MOVETO(game->height/3 + 4, game->width - 4);
+    printf("y.确认    n.返回菜单");
+}
+
+void DisPlayQuit(Game *game)
+{
+    CLEAR();
+    MOVETO(game->height/2, game->width - 6);
+    printf("Thanks for playing my game~");
 }
