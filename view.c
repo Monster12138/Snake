@@ -161,10 +161,10 @@ void RefreshMap(Game *game)
 
 void DisPlayPlayAgain(Game *game)
 {
-    MOVETO(game->height/3 + 2, game->width - 4);
-    printf("再来一局？");
+    MOVETO(game->height/3 + 2, game->width - 6);
+    printf("    再来一局？");
 
-    MOVETO(game->height/3 + 4, game->width - 4);
+    MOVETO(game->height/3 + 4, game->width - 6);
     printf("y.确认    n.返回菜单");
 }
 

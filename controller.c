@@ -188,9 +188,7 @@ bool KilledBySelf(const Snake *snake)
     {
         if(cur->pos.x == head->pos.x
            && cur->pos.y == head->pos.y){
-            printf("KilledBySelf!\n");
-            printf("%d,%d\n",cur->pos.x,cur->pos.y);
-            return true;
+           return true;
         }
 
         cur = cur->next;
@@ -351,10 +349,8 @@ void GameRun(Game *game)
 //      usleep(500000);
     }
 
-    strcpy(message, "Game Over!Press any key to return menu");
+    strcpy(message, "Game Over!");
     DisPlayMessage(game, message);
-
-    getchar();
 
     if(PlayAgain(game)){
         GameInit(game);
