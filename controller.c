@@ -8,6 +8,7 @@
 #include"model.h"
 #include"controller.h"
 #include"view.h"
+#include"mysql.h"
 #include <stdlib.h>
 
 #define TTY_PATH            "/dev/tty"
@@ -263,17 +264,25 @@ int SaveScore(int score)
 {
     MYSQL my_connection;
     int res;
+    char name[20];
+    char sql_str[100];
 
+    scanf("%s",name);
+
+    sprintf(sql_str, "%s%s%s%d%s","INSERT INTO score(name, score) VALUES(\"", name, "\",", score, ")");
+    printf("%s",sql_str);
+    getchar();
     mysql_init(&my_connection);
     if (mysql_real_connect(&my_connection, "localhost",
                            "root", "123456", "Snake", 0, NULL, 0)) {
         printf("Connection success\n");
-        res = mysql_query(&my_connection, "INSERT INTO score(name, score) VALUES('player1', 10)");
+        res = mysql_query(&my_connection, sql_str);
         if (!res) {
             printf("Inserted %lu rows\n",
                    (unsigned long)mysql_affected_rows(&my_connection));
         } else {
             fprintf(stderr, "Insert error %d: %s\n", mysql_errno(&my_connection), mysql_error(&my_connection));
+            return 0;
         }
 
         mysql_close(&my_connection);
@@ -281,11 +290,11 @@ int SaveScore(int score)
         fprintf(stderr, "Connection failed\n");
         if (mysql_error(&my_connection)) {
             fprintf(stderr, "Connection error %d: %s\n", mysql_errno(&my_connection), mysql_error(&my_connection));
+            return 0;
         }
     }
-    return EXIT_SUCCESS;
+    return 1;
 }
-
 
 //UP 103
 //LEFT 105
@@ -378,6 +387,8 @@ void GameRun(Game *game)
 
     strcpy(message, "Game Over!");
     DisPlayMessage(game, message);
+
+    SaveScore(game->score);
 
     if(PlayAgain(game)){
         GameInit(game);

@@ -1,3 +1,2 @@
 main:controller.c view.c
-	gcc $^ -o $@
-
+	gcc -I/usr/include/mysql $^ -L/usr/lib/mysql -lmysqlclient -o $@
