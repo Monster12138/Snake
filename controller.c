@@ -260,7 +260,27 @@ bool PlayAgain(Game *game)
     return b;
 }
 
-int SaveScore(int score)
+int ReadData(Game *game)
+{
+    MYSQL my_connection;
+    MYSQL_RES *res;
+    MYSQL_ROW row;
+    
+    if (mysql_real_connect(&my_connection, "localhost",
+                           "root", "123456", "Snake", 0, NULL, 0)) {
+        res = mysql_store_result(&my_connection);
+        row = mysql_fetch_row(res);
+
+        printf("最高分：%d",res->filed[0].score);
+        return 1;
+    }
+    else {
+        
+        return 0;
+    }
+}
+
+int SaveScore(Game *game)
 {
     MYSQL my_connection;
     int res;
@@ -269,17 +289,17 @@ int SaveScore(int score)
 
     scanf("%s",name);
 
-    sprintf(sql_str, "%s%s%s%d%s","INSERT INTO score(name, score) VALUES(\"", name, "\",", score, ")");
-    printf("%s",sql_str);
-    getchar();
+    sprintf(sql_str, "%s%s%s%d%s","INSERT INTO score(name, score) VALUES(\"",
+            name, "\",", game->score, ")");
     mysql_init(&my_connection);
     if (mysql_real_connect(&my_connection, "localhost",
                            "root", "123456", "Snake", 0, NULL, 0)) {
-        printf("Connection success\n");
+//        DisPlayMessage(game, "Connection success");
         res = mysql_query(&my_connection, sql_str);
         if (!res) {
-            printf("Inserted %lu rows\n",
-                   (unsigned long)mysql_affected_rows(&my_connection));
+            DisPlayMessage(game, "Successfully saved results");
+//            printf("Inserted %lu rows\n",
+//                   (unsigned long)mysql_affected_rows(&my_connection));
         } else {
             fprintf(stderr, "Insert error %d: %s\n", mysql_errno(&my_connection), mysql_error(&my_connection));
             return 0;
@@ -388,7 +408,7 @@ void GameRun(Game *game)
     strcpy(message, "Game Over!");
     DisPlayMessage(game, message);
 
-    SaveScore(game->score);
+    SaveScore(game);
 
     if(PlayAgain(game)){
         GameInit(game);
