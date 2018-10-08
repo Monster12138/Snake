@@ -265,13 +265,22 @@ int ReadData(Game *game)
     MYSQL my_connection;
     MYSQL_RES *res;
     MYSQL_ROW row;
-    
+    char sql_str[50] = "select * from score";
+
+    mysql_init(&my_connection);
     if (mysql_real_connect(&my_connection, "localhost",
                            "root", "123456", "Snake", 0, NULL, 0)) {
+        mysql_real_query(&my_connection,sql_str,strlen(sql_str));
         res = mysql_store_result(&my_connection);
-        row = mysql_fetch_row(res);
+        printf("%d\n", res);
 
-        printf("最高分：%d",res->filed[0].score);
+        row = mysql_fetch_row(res);
+        
+        printf("%d\n", row);
+        printf("最高分：%d",row[1]);
+
+        getchar();
+        mysql_close(&my_connection);
         return 1;
     }
     else {
@@ -287,6 +296,7 @@ int SaveScore(Game *game)
     char name[20];
     char sql_str[100];
 
+    DisPlayMessage(game, "Please input your name:>");
     scanf("%s",name);
 
     sprintf(sql_str, "%s%s%s%d%s","INSERT INTO score(name, score) VALUES(\"",
@@ -443,6 +453,7 @@ void menu(Game *game)
                      break;
                  }
         case '3':{
+                     ReadData(game);
                      //ScoreRead(game);
                      break;
                  }
@@ -464,7 +475,6 @@ int main()
 
     Game g;
     srand((unsigned int)time(NULL));
-    
     menu(&g);
 
     system(STTY_DEF TTY_PATH);
