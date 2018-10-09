@@ -174,3 +174,8 @@ void DisPlayQuit(Game *game)
     MOVETO(game->height/2, game->width - 6);
     printf("Thanks for playing my game~");
 }
+
+void DisPlayScore_list(Game *game)
+{
+    //todo
+}
