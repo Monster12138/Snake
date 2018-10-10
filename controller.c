@@ -455,7 +455,8 @@ void GameQuit(Game *game)
     int i = 0;
     while(i < 10)
     {
-        free(game->name_list[i]);
+        if(game->name_list[i])free(game->name_list[i]);
+        else break;
         i++;
     }
     DisPlayQuit(game);
@@ -488,7 +489,8 @@ void menu(Game *game)
                      break;
                  }
         case '3':{
-                     ReadData(game);
+                     DisPlayScore_list(game);
+                     getchar();
                      //ScoreRead(game);
                      break;
                  }

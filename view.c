@@ -177,5 +177,17 @@ void DisPlayQuit(Game *game)
 
 void DisPlayScore_list(Game *game)
 {
+    int i = 0;
+    int height_offset = 4;
+    MOVETO(game->height + height_offset, game->width - 10);
+    printf("%10s    %10s","name", "score");
+    while(i < 10)
+    {
+        MOVETO(game->height + height_offset, game->width - 10);
+//        printf("%10s    %10d",game->name_list[i],game->score_list[i]);
+
+        i++;
+        height_offset += 2;
+    }
     //todo
 }

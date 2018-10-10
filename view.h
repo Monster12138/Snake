@@ -76,3 +76,7 @@ void DisPlayPlayAgain(Game *game);
 
 //显示游戏退出信息
 void DisPlayQuit(Game *game);
+
+//显示排行榜信息
+void DisPlayScore_list(Game *game);
+
