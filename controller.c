@@ -55,17 +55,34 @@ int scanKeyboard()
     return in;
 }
 
+void GameQuit(Game *game)
+{
+    int i = 0;
+    while(i < 10)
+    {
+        if(game->name_list[i])free(game->name_list[i]);
+        else break;
+        i++;
+    }
+    system(STTY_DEF TTY_PATH);
+    SHOW_CURSOR();
+    DisPlayQuit(game);
+
+    MOVETO(game->height + 2, 0);
+    exit(0);
+}
+
 int ReadData(Game *game)
 {
     MYSQL my_connection;
     MYSQL_RES *res;
     MYSQL_ROW row;
     int i = 0;
-    char sql_str[50] = "select * from score order by score desc";
+    char sql_str[50] = "select * from score order by result desc";
 
     mysql_init(&my_connection);
     if (mysql_real_connect(&my_connection, "localhost",
-                           "root", "123456", "Snake", 0, NULL, 0)) {
+                           "zzz", "123456", "Snake", 0, NULL, 0)) {
         mysql_real_query(&my_connection,sql_str,strlen(sql_str));
         res = mysql_store_result(&my_connection);
 
@@ -74,7 +91,7 @@ int ReadData(Game *game)
             char *name = (char *)malloc(20);
             if(row = mysql_fetch_row(res)){
                 strcpy(name, row[0]);
-                sscanf(row[0], "%d", game->score_list[i]);
+                sscanf(row[1], "%d", &game->score_list[i]);
             }
             else {
                 strcpy(name, "---");
@@ -88,13 +105,20 @@ int ReadData(Game *game)
         game->highest_score = game->score_list[0];
 
         DisPlayMessage(game, "Read data success!");
-        getchar();
+        sleep(1);
         mysql_free_result(res); 
         mysql_close(&my_connection);
         return 1;
     }
     else {
         //todo
+        DisPlayMessage(game, "Connection failed!");
+        if (mysql_error(&my_connection)) {
+            fprintf(stderr, "Connection error %d: %s\n", mysql_errno(&my_connection), mysql_error(&my_connection));
+            return 0;
+        }
+        getchar();
+        GameQuit(game);
         return 0;
     }
 }
@@ -159,11 +183,17 @@ void GameInit(Game *game)
     game->width = 28;
     game->height = 27;
     game->score = 0;
-    ReadData(game);
 
     SnakeInit(&game->snake);
     game->food = Generatefood(game);
+    memset(game->score_list,10,sizeof(unsigned int));
+    
+    for(int i = 0; i < 10; i++)
+    {
+        game->name_list[i] = NULL;
+    }
 
+    ReadData(game);
     RefreshMap(game);
 }
 
@@ -323,11 +353,11 @@ int SaveScore(Game *game)
     system(STTY_US TTY_PATH);
     system("stty -icanon");
 
-    sprintf(sql_str, "%s%s%s%d%s","INSERT INTO score(name, score) VALUES(\"",
+    sprintf(sql_str, "%s%s%s%d%s","INSERT INTO score(name, result) VALUES(\"",
             name, "\",", game->score, ")");
     mysql_init(&my_connection);
     if (mysql_real_connect(&my_connection, "localhost",
-                           "root", "123456", "Snake", 0, NULL, 0)) {
+                           "zzz", "123456", "Snake", 0, NULL, 0)) {
 //        DisPlayMessage(game, "Connection success");
         res = mysql_query(&my_connection, sql_str);
         if (!res) {
@@ -363,6 +393,7 @@ void GameRun(Game *game)
     bool flag = 0;
     int speed = 10;
     int input = 0;
+    GameInit(game);
     game->food = Generatefood(game);
     while(!GameOver(game))
     {
@@ -450,24 +481,12 @@ void GameRun(Game *game)
     }
 }
 
-void GameQuit(Game *game)
-{
-    int i = 0;
-    while(i < 10)
-    {
-        if(game->name_list[i])free(game->name_list[i]);
-        else break;
-        i++;
-    }
-    DisPlayQuit(game);
-}
-
 void menu(Game *game)
 {
+    GameInit(game);
     char ch = 1;
     while(ch != '0')
     {
-        GameInit(game);
         DisPlayMenu(game);
 
         ch = getchar();
@@ -499,8 +518,6 @@ void menu(Game *game)
                 }
         }
     }
-
-    MOVETO(game->height + 2, 0);
 }
 
 int main()
@@ -514,6 +531,5 @@ int main()
     srand((unsigned int)time(NULL));
     menu(&g);
 
-    system(STTY_DEF TTY_PATH);
     return 0;
 }

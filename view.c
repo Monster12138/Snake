@@ -155,6 +155,7 @@ void DisPlayMenu(Game *game)
 
 void RefreshMap(Game *game)
 {
+    CLEAR();
     DisPlayWall(game->width, game->height);
     CleanMessage(game);
 }
@@ -178,16 +179,21 @@ void DisPlayQuit(Game *game)
 void DisPlayScore_list(Game *game)
 {
     int i = 0;
-    int height_offset = 4;
-    MOVETO(game->height + height_offset, game->width - 10);
-    printf("%10s    %10s","name", "score");
+    int height_offset = 6;
+    MOVETO(4, game->width - 10);
+    printf("  %10s  |  %10s","name", "score");
+    MOVETO(5, game->width - 10);
+    printf("------------------------------");
     while(i < 10)
     {
-        MOVETO(game->height + height_offset, game->width - 10);
-//        printf("%10s    %10d",game->name_list[i],game->score_list[i]);
+        MOVETO(height_offset, game->width - 10);
+        printf("%2d:%10s  |  %10d",i + 1, game->name_list[i],game->score_list[i]);
 
+        height_offset ++;
+        MOVETO(height_offset, game->width - 10);
+        printf("------------------------------");
         i++;
-        height_offset += 2;
+        height_offset ++;
     }
     //todo
 }
