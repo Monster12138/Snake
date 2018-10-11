@@ -104,7 +104,7 @@ int ReadData(Game *game)
         
         game->highest_score = game->score_list[0];
 
-        DisPlayMessage(game, "Read data success!");
+        DisPlayMessage(game, "Reading data...");
         sleep(1);
         mysql_free_result(res); 
         mysql_close(&my_connection);

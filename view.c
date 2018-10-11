@@ -180,17 +180,17 @@ void DisPlayScore_list(Game *game)
 {
     int i = 0;
     int height_offset = 6;
-    MOVETO(4, game->width - 10);
+    MOVETO(4, game->width - 14);
     printf("  %10s  |  %10s","name", "score");
-    MOVETO(5, game->width - 10);
+    MOVETO(5, game->width - 14);
     printf("------------------------------");
     while(i < 10)
     {
-        MOVETO(height_offset, game->width - 10);
+        MOVETO(height_offset, game->width - 14);
         printf("%2d:%10s  |  %10d",i + 1, game->name_list[i],game->score_list[i]);
 
         height_offset ++;
-        MOVETO(height_offset, game->width - 10);
+        MOVETO(height_offset, game->width - 14);
         printf("------------------------------");
         i++;
         height_offset ++;
