@@ -80,6 +80,7 @@ void DisPlayHeadPos(const Game *game)
 
 void DisPlayPressKey(Game *game,const int key)
 {
+    //todo better
     MOVETO(game->height - 4,2 * game->width + 8);
     //↑↓←→
     if(key == 119)
@@ -169,10 +170,10 @@ void DisPlayPlayAgain(Game *game)
     printf("y.确认    n.返回菜单");
 }
 
-void DisPlayQuit(Game *game)
+void DisPlayQuit()
 {
     CLEAR();
-    MOVETO(game->height/2, game->width - 6);
+    MOVETO(13, 22);
     printf("Thanks for playing my game~");
 }
 
@@ -180,10 +181,14 @@ void DisPlayScore_list(Game *game)
 {
     int i = 0;
     int height_offset = 6;
+
+    MOVETO(3, game->width - 14);
+    printf("------------------------------");
     MOVETO(4, game->width - 14);
-    printf("  %10s  |  %10s","name", "score");
+    printf("   %10s  |  %10s","name", "score");
     MOVETO(5, game->width - 14);
     printf("------------------------------");
+
     while(i < 10)
     {
         MOVETO(height_offset, game->width - 14);
@@ -195,5 +200,4 @@ void DisPlayScore_list(Game *game)
         i++;
         height_offset ++;
     }
-    //todo
 }

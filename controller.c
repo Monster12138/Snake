@@ -55,20 +55,38 @@ int scanKeyboard()
     return in;
 }
 
-void GameQuit(Game *game)
+//进入游戏模式（隐藏光标，清空输入缓存，关闭按键回显）
+void GameMode()
 {
-    int i = 0;
-    while(i < 10)
-    {
-        if(game->name_list[i])free(game->name_list[i]);
-        else break;
-        i++;
-    }
+    HIDE_CURSOR();
+    system(STTY_US TTY_PATH);
+    system("stty -icanon");
+    setbuf(stdin, NULL);
+}
+
+//退出游戏模式（显示光标，按键回显）
+void QuitGameMode()
+{
     system(STTY_DEF TTY_PATH);
     SHOW_CURSOR();
-    DisPlayQuit(game);
+}
 
-    MOVETO(game->height + 2, 0);
+
+void GameQuit(Game *game)
+{
+    if(game){
+        int i = 0;
+        while(i < 10)
+        {
+            if(game->name_list[i])free(game->name_list[i]);
+            else break;
+            i++;
+        }
+    }
+    QuitGameMode();
+    DisPlayQuit();
+
+    MOVETO(29, 0);
     exit(0);
 }
 
@@ -185,7 +203,10 @@ void GameInit(Game *game)
     game->score = 0;
 
     SnakeInit(&game->snake);
-    game->food = Generatefood(game);
+
+    game->food.x = 0;
+    game->food.y = 0;
+
     memset(game->score_list,10,sizeof(unsigned int));
     
     for(int i = 0; i < 10; i++)
@@ -346,13 +367,11 @@ int SaveScore(Game *game)
 
     DisPlayMessage(game, "Please input your name:>");
     setbuf(stdin, NULL);
-    system(STTY_DEF TTY_PATH);
+    QuitGameMode();
 
     scanf("%s",name);
 
-    system(STTY_US TTY_PATH);
-    system("stty -icanon");
-
+    GameMode();
     sprintf(sql_str, "%s%s%s%d%s","INSERT INTO score(name, result) VALUES(\"",
             name, "\",", game->score, ")");
     mysql_init(&my_connection);
@@ -389,7 +408,6 @@ int SaveScore(Game *game)
 void GameRun(Game *game)
 {
     Position NextPos;
-    char message[50] = "";
     bool flag = 0;
     int speed = 10;
     int input = 0;
@@ -460,18 +478,15 @@ void GameRun(Game *game)
 //      DisPlayFoodPos(game);
 //      DisPlayHeadPos(game);
         DisPlayPressKey(game,input);
-        DisPlayMessage(game, message);
 
         speed = SpeedCtrl(game->snake.length);
 
         DisPlayL_S(game,10 - speed + 1);
         if(flag)usleep(speed * 5 * 10000);
         else usleep(50000);
-//      usleep(500000);
     }
 
-    strcpy(message, "Game Over!");
-    DisPlayMessage(game, message);
+    DisPlayMessage(game, "Game Over!");
 
     SaveScore(game);
 
@@ -483,6 +498,12 @@ void GameRun(Game *game)
 
 void menu(Game *game)
 {
+    if(!game){
+        printf("Fatal error!");
+        GameQuit(game);
+    }
+
+
     GameInit(game);
     char ch = 1;
     while(ch != '0')
@@ -503,14 +524,15 @@ void menu(Game *game)
                     break;
                  }
         case '2':{
+                     //todo
                      //GameLoad(game);
                      GameRun(game);
                      break;
                  }
         case '3':{
                      DisPlayScore_list(game);
+                     DisPlayMessage(game, "press [ENTER] to return menu");
                      getchar();
-                     //ScoreRead(game);
                      break;
                  }
         default:{
@@ -522,10 +544,7 @@ void menu(Game *game)
 
 int main()
 {
-    system(STTY_US TTY_PATH);
-    system("stty -icanon");
-    //清除输入缓存区
-    setbuf(stdin, NULL);
+    GameMode();
 
     Game g;
     srand((unsigned int)time(NULL));
