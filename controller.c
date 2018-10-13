@@ -217,7 +217,6 @@ void GameInit(Game *game)
         game->name_list[i] = NULL;
     }
 
-    ReadData(game);
     RefreshMap(game);
 }
 
@@ -384,6 +383,8 @@ int SaveScore(Game *game)
         res = mysql_query(&my_connection, sql_str);
         if (!res) {
             DisPlayMessage(game, "Successfully saved results");
+            sleep(1);
+            CleanMessage(game);
 //            printf("Inserted %lu rows\n",
 //                   (unsigned long)mysql_affected_rows(&my_connection));
         } else {
@@ -414,7 +415,6 @@ void GameRun(Game *game)
     bool flag = 0;
     int speed = 10;
     int input = 0;
-    GameInit(game);
     game->food = Generatefood(game);
     while(!GameOver(game))
     {
@@ -509,6 +509,7 @@ void menu(Game *game)
 
 
     GameInit(game);
+    ReadData(game);
     char ch = 1;
     while(ch != '0')
     {
@@ -524,6 +525,7 @@ void menu(Game *game)
                     break;
                  }
         case '1':{
+                    GameInit(game);
                     GameRun(game);
                     break;
                  }
@@ -549,6 +551,11 @@ void menu(Game *game)
 int main()
 {
     GameMode();
+
+    HIDE_CURSOR();
+    system(STTY_US TTY_PATH);
+    system("stty -icanon");
+    setbuf(stdin, NULL);
 
     Game g;
     srand((unsigned int)time(NULL));
