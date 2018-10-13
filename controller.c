@@ -98,9 +98,13 @@ int ReadData(Game *game)
     int i = 0;
     char sql_str[50] = "select * from score order by result desc";
 
+    DisPlayMessage(game, "Reading data...");
+    sleep(1);
     mysql_init(&my_connection);
-    if (mysql_real_connect(&my_connection, "localhost",
+    if (mysql_real_connect(&my_connection, "39.108.227.206",
                            "zzz", "123456", "Snake", 0, NULL, 0)) {
+    DisPlayMessage(game, "Connect Success");
+    sleep(1);
         mysql_real_query(&my_connection,sql_str,strlen(sql_str));
         res = mysql_store_result(&my_connection);
 
@@ -122,8 +126,6 @@ int ReadData(Game *game)
         
         game->highest_score = game->score_list[0];
 
-        DisPlayMessage(game, "Reading data...");
-        sleep(1);
         mysql_free_result(res); 
         mysql_close(&my_connection);
         return 1;
@@ -131,6 +133,7 @@ int ReadData(Game *game)
     else {
         //todo
         DisPlayMessage(game, "Connection failed!");
+        sleep(1);
         if (mysql_error(&my_connection)) {
             fprintf(stderr, "Connection error %d: %s\n", mysql_errno(&my_connection), mysql_error(&my_connection));
             return 0;
@@ -375,7 +378,7 @@ int SaveScore(Game *game)
     sprintf(sql_str, "%s%s%s%d%s","INSERT INTO score(name, result) VALUES(\"",
             name, "\",", game->score, ")");
     mysql_init(&my_connection);
-    if (mysql_real_connect(&my_connection, "localhost",
+    if (mysql_real_connect(&my_connection, "39.108.227.206",
                            "zzz", "123456", "Snake", 0, NULL, 0)) {
 //        DisPlayMessage(game, "Connection success");
         res = mysql_query(&my_connection, sql_str);
@@ -489,6 +492,7 @@ void GameRun(Game *game)
     DisPlayMessage(game, "Game Over!");
 
     SaveScore(game);
+    ReadData(game);
 
     if(PlayAgain(game)){
         GameInit(game);
