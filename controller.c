@@ -97,14 +97,13 @@ int ReadData(Game *game)
     MYSQL_ROW row;
     int i = 0;
     char sql_str[50] = "select * from score order by result desc";
+    char error_str[100] = "";
 
-    DisPlayMessage(game, "Reading data...");
+    DisPlayMessage(game, "Loading...");
     sleep(1);
     mysql_init(&my_connection);
     if (mysql_real_connect(&my_connection, "39.108.227.206",
                            "zzz", "123456", "Snake", 0, NULL, 0)) {
-    DisPlayMessage(game, "Connect Success");
-    sleep(1);
         mysql_real_query(&my_connection,sql_str,strlen(sql_str));
         res = mysql_store_result(&my_connection);
 
@@ -134,8 +133,9 @@ int ReadData(Game *game)
         //todo
         DisPlayMessage(game, "Connection failed!");
         sleep(1);
-        if (mysql_error(&my_connection)) {
-            fprintf(stderr, "Connection error %d: %s\n", mysql_errno(&my_connection), mysql_error(&my_connection));
+        if (mysql_error(&my_connection)){
+            sprintf(error_str, "Connection error %d: %s\n", mysql_errno(&my_connection), mysql_error(&my_connection));
+            DisPlayMessage(game, error_str);
             return 0;
         }
         getchar();
@@ -359,19 +359,47 @@ bool PlayAgain(Game *game)
     return b;
 }
 
+bool CheckName(char *name)
+{
+    for(int i = 0; *(name + i) != '\0'; i++)
+    {
+        if( (*(name + i) > 32 && *(name + i) < '0' )||
+           (*(name + i) > '9' && *(name + i) < 'A') )
+            return *(name + i);
+    }
+
+    return '\0';
+}
+
+char* SafeInputName(Game *game, char *name)
+{
+    char error_str[100] = "";
+
+    scanf("%s", name);
+
+    char c = CheckName(name);
+    if(c != '\0'){
+        sprintf(error_str, "%s%c %s", "Name contains illegal characters:[", c, "],Please input again!:>");
+        DisPlayMessage(game ,error_str);
+        name = SafeInputName(game, name);
+    }
+
+    return name;
+}
 
 int SaveScore(Game *game)
 {
     MYSQL my_connection;
     int res;
-    char name[20];
+    char *name = (char*)malloc(20);
     char sql_str[100];
+    char error_str[100];
 
     DisPlayMessage(game, "Please input your name:>");
     setbuf(stdin, NULL);
     QuitGameMode();
 
-    scanf("%s",name);
+    name = SafeInputName(game, name);
 
     GameMode();
     sprintf(sql_str, "%s%s%s%d%s","INSERT INTO score(name, result) VALUES(\"",
@@ -388,18 +416,26 @@ int SaveScore(Game *game)
 //            printf("Inserted %lu rows\n",
 //                   (unsigned long)mysql_affected_rows(&my_connection));
         } else {
-            fprintf(stderr, "Insert error %d: %s\n", mysql_errno(&my_connection), mysql_error(&my_connection));
+            sprintf(error_str, "%s %d%s %s\n", 
+                   "Insert error",
+                   mysql_errno(&my_connection), 
+                   ":", 
+                   mysql_error(&my_connection));
+
+            DisPlayMessage(game, error_str);
+//            fprintf(stderr, "Insert error %d: %s\n", mysql_errno(&my_connection), mysql_error(&my_connection));
             return 0;
         }
 
         mysql_close(&my_connection);
     } else {
-        fprintf(stderr, "Connection failed\n");
         if (mysql_error(&my_connection)) {
             fprintf(stderr, "Connection error %d: %s\n", mysql_errno(&my_connection), mysql_error(&my_connection));
             return 0;
         }
     }
+
+    free(name);
     return 1;
 }
 
@@ -491,8 +527,8 @@ void GameRun(Game *game)
 
     DisPlayMessage(game, "Game Over!");
 
-    SaveScore(game);
-    ReadData(game);
+    if(SaveScore(game))
+        ReadData(game);
 
     if(PlayAgain(game)){
         GameInit(game);

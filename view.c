@@ -109,6 +109,7 @@ void DisPlayPressKey(Game *game,const int key)
 
 void DisPlayMessage(Game *game,const char *message)
 {
+    CleanMessage(game);
     MOVETO(game->height - 8, 2 *  game->width + 6);
     printf(" %s",message);
     fflush(stdout);
@@ -117,7 +118,7 @@ void DisPlayMessage(Game *game,const char *message)
 void CleanMessage(Game *game)
 {
     MOVETO(game->height - 8,2 *  game->width + 6);
-    printf("                                        ");
+    printf("                                                               ");
 }
 
 void DisPlayL_S(Game *game, int speed)
