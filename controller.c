@@ -552,11 +552,6 @@ int main()
 {
     GameMode();
 
-    HIDE_CURSOR();
-    system(STTY_US TTY_PATH);
-    system("stty -icanon");
-    setbuf(stdin, NULL);
-
     Game g;
     srand((unsigned int)time(NULL));
     menu(&g);
