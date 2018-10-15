@@ -4,6 +4,7 @@
 //♠♣♧♡♥❤❥❣♂♀✲☀☼☾☽◐◑☺☻☎☏✿❀№↑↓←→√×÷★℃℉°◆◇⊙■□△▽¿½☯✡㍿卍卐♂♀✚〓㎡♪♫♩♬㊚㊛囍㊒㊖Φ♀♂‖$@*&#※卍卐Ψ♫♬♭♩♪♯♮⌒¶∮‖€￡¥$
 void DisPlayWall(int width,int height)
 {
+    printf("\033[47;31m");
     CLEAR();
     HIDE_CURSOR();
 
@@ -32,13 +33,17 @@ void DisPlayWall(int width,int height)
     {
         printf("■");
     }
+
+    printf("\033[47;30m");
 }
 
 void DisPlayFood(Position *pos)
 {
     MOVETO(pos->x,2*pos->y);
 
+    printf("\033[47;32m");
     printf("★ ");
+    printf("\033[47;30m");
 }
 
 void DisPlaySnake(const Snake *snake)
@@ -49,7 +54,8 @@ void DisPlaySnake(const Snake *snake)
         int x = cur->pos.x;
         int y = cur->pos.y;
         MOVETO(x,2 * y);
-        printf("□ ");
+        if(cur == snake->head)printf("⊙ ");
+        else printf("□ ");
         cur = cur->next;
     }
 }
@@ -58,6 +64,12 @@ void DisPlaySnakeNode(const Position *pos)
 {
     MOVETO(pos->x, 2 * (pos->y));
     printf("□ ");
+}
+
+void DisPlaySnakeHead(const Position *pos)
+{
+    MOVETO(pos->x, 2 * (pos->y));
+    printf("⊙ ");
 }
 
 void CleanSnakeNode(const Position *pos)

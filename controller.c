@@ -58,6 +58,7 @@ int scanKeyboard()
 //进入游戏模式（隐藏光标，清空输入缓存，关闭按键回显）
 void GameMode()
 {
+    printf("\033[47;30m");
     HIDE_CURSOR();
     system(STTY_US TTY_PATH);
     system("stty -icanon");
@@ -67,6 +68,7 @@ void GameMode()
 //退出游戏模式（显示光标，按键回显）
 void QuitGameMode()
 {
+    printf("\033[49;47m");
     system(STTY_DEF TTY_PATH);
     SHOW_CURSOR();
 }
@@ -87,6 +89,7 @@ void GameQuit(Game *game)
     DisPlayQuit();
 
     MOVETO(29, 0);
+
     exit(0);
 }
 
@@ -254,9 +257,11 @@ void HeadAdd(Snake *snake, const Position *next)
 
     NewNode->next = NULL;
     snake->head->next = NewNode;
+
+    DisPlaySnakeNode(&snake->head->pos);
     snake->head = NewNode;
 
-    DisPlaySnakeNode(&NewNode->pos);
+    DisPlaySnakeHead(&NewNode->pos);
 }
 
 //蛇尾去掉一个结点
@@ -526,6 +531,7 @@ void GameRun(Game *game)
     }
 
     DisPlayMessage(game, "Game Over!");
+    sleep(1);
 
     if(SaveScore(game))
         ReadData(game);

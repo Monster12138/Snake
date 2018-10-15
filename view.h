@@ -44,6 +44,9 @@ void DisPlaySnake(const Snake *snake);
 //显示蛇结点
 void DisPlaySnakeNode(const Position *pos);
 
+//显示蛇头
+void DisPlaySnakeHead(const Position *pos);
+
 //清除结点
 void CleanSnakeNode(const Position *pos);
 
