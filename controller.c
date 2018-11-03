@@ -364,16 +364,17 @@ bool PlayAgain(Game *game)
     return b;
 }
 
-bool CheckName(char *name)
+char CheckName(char *name)
 {
-    for(int i = 0; *(name + i) != '\0'; i++)
+    int i;
+    for(i = 0; *(name + i) != '\0'; i++)
     {
         if( (*(name + i) > 32 && *(name + i) < '0' )||
            (*(name + i) > '9' && *(name + i) < 'A') )
-            return *(name + i);
+            break;
     }
 
-    return '\0';
+    return *(name + i);
 }
 
 char* SafeInputName(Game *game, char *name)
@@ -384,7 +385,10 @@ char* SafeInputName(Game *game, char *name)
 
     char c = CheckName(name);
     if(c != '\0'){
-        sprintf(error_str, "%s%c %s", "Name contains illegal characters:[", c, "],Please input again!:>");
+        sprintf(error_str, "%s%c %s", 
+                "Name contains illegal characters:[", 
+                c, 
+                "],Please input again!:>");
         DisPlayMessage(game ,error_str);
         name = SafeInputName(game, name);
     }
