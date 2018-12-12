@@ -488,13 +488,19 @@ void *KeyBoardListener(void *arg)
 {
     Game *game = (Game*)arg;
     int input = 32;
-    int lastInput;
-    int lastDir;
+    int lastInput, lastDir, speedTmp = game->speed;
     while(!GameOver(game))
     {
         lastInput = input;
         lastDir = game->snake.Dir;
         input = get_char();
+        if(input == lastInput){
+            speedTmp = game->speed;
+            game->speed = 3;
+        }
+        else {
+            game->speed = speedTmp;
+        }
         if(DirCheck(input, lastInput, lastDir))continue;
 
         pthread_rwlock_wrlock(&rwlock);
