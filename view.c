@@ -90,30 +90,30 @@ void DisPlayHeadPos(const Game *game)
     printf("Snake Head Position:[%d,%d]\n",game->snake.head->pos.x,game->snake.head->pos.y);
 }
 
-void DisPlayPressKey(Game *game,const int key)
+void DisPlayPressKey(Game *game)
 {
-    //todo better
+    int key = game->snake.Dir;
     MOVETO(game->height - 4,2 * game->width + 8);
     //↑↓←→
-    if(key == 119)
+    if(key == UP)
         printf("↑ ");
     else 
         printf("◆ ");
 
     MOVETO(game->height - 3,2 * game->width + 6);
-    if(key == 97)
+    if(key == LEFT)
         printf("← ");
     else 
         printf("◆ ");
     
     MOVETO(game->height - 3,2 * game->width + 10);
-    if(key == 100)
+    if(key == RIGHT)
         printf("→ ");
     else 
         printf("◆ ");
 
     MOVETO(game->height - 2,2 * game->width + 8);
-    if(key == 115)
+    if(key == DOWN)
         printf("↓ ");
     else 
         printf("◆ ");

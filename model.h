@@ -2,7 +2,11 @@
 #define _MODEL_H_ 
 
 typedef enum {
-    UP,DOWN,LEFT,RIGHT
+    PAUSE = 32,
+    LEFT = 97,
+    RIGHT = 100,
+    DOWN = 115,
+    UP = 119
 }Direction;
 
 typedef struct{
@@ -25,9 +29,11 @@ typedef struct Snake{
 typedef struct Game{
     Position food;
     Snake snake;
+
     unsigned int width;
     unsigned int height;
     unsigned int score;
+    unsigned int speed;
     unsigned int highest_score;
     unsigned int score_list[10];
     char *name_list[10];

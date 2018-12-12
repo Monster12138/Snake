@@ -5,6 +5,10 @@
 #include<time.h>
 #include<termio.h>
 #include<unistd.h>
+#include<semaphore.h>
+#include<errno.h>
+#include<pthread.h>
+#include<fcntl.h>
 #include"model.h"
 #include"controller.h"
 #include"view.h"
@@ -15,12 +19,17 @@
 #define STTY_US             "stty raw -echo -F "
 #define STTY_DEF            "stty -raw echo -F "
 
+pthread_t Listener, Runner, Show;
+pthread_rwlock_t rwlock;
+pthread_rwlockattr_t attr;
+
 //暂停
 void Pause(Game *game)
 {
     tcflag_t tmp;
     char pauseMes[] =  "Press any key to continue";
     DisPlayMessage(game,pauseMes);
+
     struct termios te;
     tcgetattr( STDIN_FILENO,&te);
     tmp = te.c_lflag;
@@ -31,6 +40,7 @@ void Pause(Game *game)
     te.c_lflag |=( ICANON|ECHO);
     tcsetattr(STDIN_FILENO,TCSANOW,&te);
     te.c_lflag = tmp;
+
     system(STTY_US TTY_PATH);
     system("stty -icanon"); 
 }
@@ -207,6 +217,7 @@ void GameInit(Game *game)
     game->width = 28;
     game->height = 27;
     game->score = 0;
+    game->speed = 10;
 
     SnakeInit(&game->snake);
 
@@ -278,15 +289,20 @@ void RemoveTail(Snake *snake)
 //判断是否撞墙
 bool KilledByWall(const Snake *snake, int width, int height)
 {
-    return snake->head->pos.x >= height
+    pthread_rwlock_rdlock(&rwlock);
+    bool b = snake->head->pos.x >= height
         || snake->head->pos.y >= width
         || snake->head->pos.x <= 1
         || snake->head->pos.y <= 0;
+    pthread_rwlock_unlock(&rwlock);
+
+    return b;
 }
 
 //判断是否撞到自己的身体
 bool KilledBySelf(const Snake *snake)
 {
+    pthread_rwlock_rdlock(&rwlock);
     Node *head = snake->head;
     Node *cur = snake->tail;
     while(cur && cur->next)
@@ -298,14 +314,25 @@ bool KilledBySelf(const Snake *snake)
 
         cur = cur->next;
     }
+    pthread_rwlock_unlock(&rwlock);
     return false;
 }
 
 //判断游戏是否结束
 bool GameOver(Game *game)
 {
-    return KilledBySelf(&game->snake)
+    pthread_rwlock_rdlock(&rwlock);
+    bool b = KilledBySelf(&game->snake)
         || KilledByWall(&game->snake, game->width, game->height);
+    pthread_rwlock_unlock(&rwlock);
+
+/*
+    if(KilledBySelf(&game->snake))
+        DisPlayMessage(game, "KilledBySelf");
+    if(KilledByWall(&game->snake,game->width, game->height))
+        DisPlayMessage(game, "KilledByWall");
+        */
+    return b;
 }
 
 //接受键盘输入
@@ -448,6 +475,107 @@ int SaveScore(Game *game)
     return 1;
 }
 
+bool DirCheck(int input, int lastInput, int lastDir)
+{
+    return (input == lastInput
+        || (input == LEFT && lastDir == RIGHT)
+        || (input == RIGHT && lastDir == LEFT)
+        || (input == DOWN && lastDir == UP)
+        || (input == UP && lastDir == DOWN));
+}
+
+void *KeyBoardListener(void *arg)
+{
+    Game *game = (Game*)arg;
+    int input = 32;
+    int lastInput;
+    int lastDir;
+    while(!GameOver(game))
+    {
+        lastInput = input;
+        lastDir = game->snake.Dir;
+        input = get_char();
+        if(DirCheck(input, lastInput, lastDir))continue;
+
+        pthread_rwlock_wrlock(&rwlock);
+        switch(input)
+        {
+        case 32:game->snake.Dir = PAUSE;break;
+        case 97:game->snake.Dir = LEFT;break;
+        case 100:game->snake.Dir = RIGHT;break;
+        case 115:game->snake.Dir = DOWN;break;
+        case 119:game->snake.Dir = UP;break;
+        default:;
+        }
+        pthread_rwlock_unlock(&rwlock);
+    }
+    //DisPlayMessage(game, "Listener exit!");
+    return NULL;
+}
+
+void *show(void *arg)
+{
+    Game *game = (Game*)arg;
+    while(!GameOver(game))
+    {
+        pthread_rwlock_wrlock(&rwlock);
+
+        DisPlayPressKey(game);
+        DisPlayL_S(game,10 - game->speed + 1);
+
+        pthread_rwlock_unlock(&rwlock);
+    }
+
+    return NULL;
+}
+
+void *run(void *arg)
+{
+    Game *game = (Game*)arg;
+    Position NextPos;
+    game->food = Generatefood(game);
+    while(!GameOver(game))
+    {
+        pthread_rwlock_wrlock(&rwlock);
+        NextPos = GetNextPosition(&game->snake);
+//        MOVETO(0,0);
+//        printf("%d,%d",game->snake.head->pos.x,game->snake.head->pos.y);
+        HeadAdd(&game->snake, &NextPos); 
+
+        if(IsEat(&game->food, &game->snake)){
+            game->food = Generatefood(game);
+            game->score+=10;
+            game->snake.length++;
+        }
+        else
+            RemoveTail(&game->snake);
+
+        pthread_rwlock_unlock(&rwlock);
+//        DisPlaySnake(&game->snake);
+
+//      printf("%d:%d\n",input,input);
+//      DisPlayFoodPos(game);
+//      DisPlayHeadPos(game);
+
+        game->speed = SpeedCtrl(game->snake.length);
+        usleep(game->speed * 5 * 10000);
+    }
+    DisPlayMessage(game, "Game Over!");
+    sleep(1);
+
+    if(game->score >= game->score_list[9]){
+        if(SaveScore(game))
+            ReadData(game);
+    }
+/*
+    if(PlayAgain(game)){
+        GameInit(game);
+        run(game);
+    }
+*/
+    return NULL;
+}
+
 //UP 103
 //LEFT 105
 //RIGHT 106
@@ -525,7 +653,7 @@ void GameRun(Game *game)
 //      printf("%d:%d\n",input,input);
 //      DisPlayFoodPos(game);
 //      DisPlayHeadPos(game);
-        DisPlayPressKey(game,input);
+        DisPlayPressKey(game);
 
         speed = SpeedCtrl(game->snake.length);
 
@@ -572,7 +700,18 @@ void menu(Game *game)
                  }
         case '1':{
                     GameInit(game);
-                    GameRun(game);
+                    pthread_rwlock_init(&rwlock, NULL);
+                    pthread_rwlockattr_init(&attr);
+                    pthread_rwlockattr_setkind_np(&attr, PTHREAD_RWLOCK_PREFER_WRITER_NONRECURSIVE_NP); 
+
+                    pthread_create(&Runner, NULL, run, (void*)game);
+                    pthread_create(&Show, NULL, show, (void*)game);
+                    pthread_create(&Listener, NULL, KeyBoardListener, (void*)game);
+
+                    pthread_join(Listener, NULL);
+                    pthread_join(Runner, NULL);
+                    pthread_join(Show, NULL);
+                    CLEAR();
                     break;
                  }
         case '2':{
