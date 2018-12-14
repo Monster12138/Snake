@@ -1,23 +1,8 @@
-#include<stdio.h>
-#include<string.h>
-#include<stdbool.h>
-#include<stdlib.h>
-#include<time.h>
-#include<termio.h>
-#include<unistd.h>
-#include<semaphore.h>
-#include<errno.h>
-#include<pthread.h>
-#include<fcntl.h>
-#include"model.h"
-#include"controller.h"
-#include"view.h"
-#include"mysql.h"
-#include <stdlib.h>
-
 #define TTY_PATH            "/dev/tty"
 #define STTY_US             "stty raw -echo -F "
 #define STTY_DEF            "stty -raw echo -F "
+
+#include"controller.h"
 
 pthread_t Listener, Runner, Show;
 pthread_rwlock_t rwlock;
@@ -131,11 +116,11 @@ int ReadData(Game *game)
                 strcpy(name, "---");
                 game->score_list[i] = 0;
             }
-          
+
             game->name_list[i] = name;
             i++;
         }
-        
+
         game->highest_score = game->score_list[0];
 
         mysql_free_result(res); 
@@ -167,7 +152,7 @@ void SnakeInit(Snake *pSnake)
         Node *node = (Node *)malloc(sizeof(Node));
         node->pos.x = 5+i;
         node->pos.y = 2;
-        
+
         if(i == 0)
             pSnake->head = node;
 
@@ -187,7 +172,7 @@ bool IsOverLap(Position pos,Snake *pSnake)
     Node *cur = pSnake->tail;
     while(cur != NULL)
     {
-        
+
         if(pos.x == cur->pos.x && pos.y == cur->pos.y)
             return true;
 
@@ -225,7 +210,7 @@ void GameInit(Game *game)
     game->food.y = 0;
 
     memset(game->score_list,10,sizeof(unsigned int));
-    
+
     for(int i = 0; i < 10; i++)
     {
         game->name_list[i] = NULL;
@@ -281,7 +266,7 @@ void RemoveTail(Snake *snake)
     Node *cur = snake->tail;
     if(snake->tail)
         snake->tail = snake->tail->next;
-    
+
     CleanSnakeNode(&cur->pos);
     free(cur);
 }
@@ -309,7 +294,7 @@ bool KilledBySelf(const Snake *snake)
     {
         if(cur->pos.x == head->pos.x
            && cur->pos.y == head->pos.y){
-           return true;
+            return true;
         }
 
         cur = cur->next;
@@ -326,12 +311,12 @@ bool GameOver(Game *game)
         || KilledByWall(&game->snake, game->width, game->height);
     pthread_rwlock_unlock(&rwlock);
 
-/*
-    if(KilledBySelf(&game->snake))
-        DisPlayMessage(game, "KilledBySelf");
-    if(KilledByWall(&game->snake,game->width, game->height))
-        DisPlayMessage(game, "KilledByWall");
-        */
+    /*
+       if(KilledBySelf(&game->snake))
+       DisPlayMessage(game, "KilledBySelf");
+       if(KilledByWall(&game->snake,game->width, game->height))
+       DisPlayMessage(game, "KilledByWall");
+       */
     return b;
 }
 
@@ -397,7 +382,7 @@ char CheckName(char *name)
     for(i = 0; *(name + i) != '\0'; i++)
     {
         if( (*(name + i) > 32 && *(name + i) < '0' )||
-           (*(name + i) > '9' && *(name + i) < 'A') )
+            (*(name + i) > '9' && *(name + i) < 'A') )
             break;
     }
 
@@ -443,23 +428,23 @@ int SaveScore(Game *game)
     mysql_init(&my_connection);
     if (mysql_real_connect(&my_connection, "39.108.227.206",
                            "zzz", "123456", "Snake", 0, NULL, 0)) {
-//        DisPlayMessage(game, "Connection success");
+        //        DisPlayMessage(game, "Connection success");
         res = mysql_query(&my_connection, sql_str);
         if (!res) {
             DisPlayMessage(game, "Successfully saved results");
             sleep(1);
             CleanMessage(game);
-//            printf("Inserted %lu rows\n",
-//                   (unsigned long)mysql_affected_rows(&my_connection));
+            //            printf("Inserted %lu rows\n",
+            //                   (unsigned long)mysql_affected_rows(&my_connection));
         } else {
             sprintf(error_str, "%s %d%s %s\n", 
-                   "Insert error",
-                   mysql_errno(&my_connection), 
-                   ":", 
-                   mysql_error(&my_connection));
+                    "Insert error",
+                    mysql_errno(&my_connection), 
+                    ":", 
+                    mysql_error(&my_connection));
 
             DisPlayMessage(game, error_str);
-//            fprintf(stderr, "Insert error %d: %s\n", mysql_errno(&my_connection), mysql_error(&my_connection));
+            //            fprintf(stderr, "Insert error %d: %s\n", mysql_errno(&my_connection), mysql_error(&my_connection));
             return 0;
         }
 
@@ -475,35 +460,34 @@ int SaveScore(Game *game)
     return 1;
 }
 
-bool DirCheck(int input, int lastInput, int lastDir)
+bool DirCheck(int input, int lastDir)
 {
-    return (input == lastInput
-        || (input == LEFT && lastDir == RIGHT)
-        || (input == RIGHT && lastDir == LEFT)
-        || (input == DOWN && lastDir == UP)
-        || (input == UP && lastDir == DOWN));
+    return (
+            (input == LEFT && lastDir == RIGHT)
+            || (input == RIGHT && lastDir == LEFT)
+            || (input == DOWN && lastDir == UP)
+            || (input == UP && lastDir == DOWN));
 }
 
 void *KeyBoardListener(void *arg)
 {
     Game *game = (Game*)arg;
     int input = 32;
-    int lastInput, lastDir, speedTmp = game->speed;
+    int lastDir;
     while(!GameOver(game))
     {
-        lastInput = input;
         lastDir = game->snake.Dir;
         input = get_char();
-        if(input == lastInput){
-            speedTmp = game->speed;
-            game->speed = 3;
-        }
-        else {
-            game->speed = speedTmp;
-        }
-        if(DirCheck(input, lastInput, lastDir))continue;
+        if(DirCheck(input, lastDir))continue;
 
         pthread_rwlock_wrlock(&rwlock);
+        if(input == lastDir){
+            game->speed = 3;
+        }
+        else if(input == LEFT || input == RIGHT || input == UP || input == DOWN || input == PAUSE){
+            game->speed = SpeedCtrl(game->snake.length);
+        }
+
         switch(input)
         {
         case 32:game->snake.Dir = PAUSE;break;
@@ -511,7 +495,6 @@ void *KeyBoardListener(void *arg)
         case 100:game->snake.Dir = RIGHT;break;
         case 115:game->snake.Dir = DOWN;break;
         case 119:game->snake.Dir = UP;break;
-        default:;
         }
         pthread_rwlock_unlock(&rwlock);
     }
@@ -544,8 +527,8 @@ void *run(void *arg)
     {
         pthread_rwlock_wrlock(&rwlock);
         NextPos = GetNextPosition(&game->snake);
-//        MOVETO(0,0);
-//        printf("%d,%d",game->snake.head->pos.x,game->snake.head->pos.y);
+        //        MOVETO(0,0);
+        //        printf("%d,%d",game->snake.head->pos.x,game->snake.head->pos.y);
         HeadAdd(&game->snake, &NextPos); 
 
         if(IsEat(&game->food, &game->snake)){
@@ -557,13 +540,12 @@ void *run(void *arg)
             RemoveTail(&game->snake);
 
         pthread_rwlock_unlock(&rwlock);
-//        DisPlaySnake(&game->snake);
+        //        DisPlaySnake(&game->snake);
 
-//      printf("%d:%d\n",input,input);
-//      DisPlayFoodPos(game);
-//      DisPlayHeadPos(game);
+        //      printf("%d:%d\n",input,input);
+        //      DisPlayFoodPos(game);
+        //      DisPlayHeadPos(game);
 
-        game->speed = SpeedCtrl(game->snake.length);
         usleep(game->speed * 5 * 10000);
     }
     DisPlayMessage(game, "Game Over!");
@@ -573,12 +555,12 @@ void *run(void *arg)
         if(SaveScore(game))
             ReadData(game);
     }
-/*
-    if(PlayAgain(game)){
-        GameInit(game);
-        run(game);
-    }
-*/
+    /*
+       if(PlayAgain(game)){
+       GameInit(game);
+       run(game);
+       }
+       */
     return NULL;
 }
 
@@ -586,7 +568,7 @@ void *run(void *arg)
 //LEFT 105
 //RIGHT 106
 //DOWN 108
-
+#if 0
 //游戏开始
 void GameRun(Game *game)
 {
@@ -617,33 +599,33 @@ void GameRun(Game *game)
                 }
         case 100:{
                      if(game->snake.Dir == RIGHT)
-                        flag = 0;
+                         flag = 0;
 
-                    else if(game->snake.Dir != LEFT)
-                       game->snake.Dir = RIGHT;
-                    break;
-                }
+                     else if(game->snake.Dir != LEFT)
+                         game->snake.Dir = RIGHT;
+                     break;
+                 }
         case 115:{
                      if(game->snake.Dir == DOWN)
-                        flag = 0;
+                         flag = 0;
 
-                    else if(game->snake.Dir != UP)
-                        game->snake.Dir = DOWN;
-                    break;
-                }
+                     else if(game->snake.Dir != UP)
+                         game->snake.Dir = DOWN;
+                     break;
+                 }
         case 119:{
-                    if(game->snake.Dir == UP)
-                        flag = 0;
-                    else if(game->snake.Dir != DOWN)
-                        game->snake.Dir = UP;
-                    break;
-                }
+                     if(game->snake.Dir == UP)
+                         flag = 0;
+                     else if(game->snake.Dir != DOWN)
+                         game->snake.Dir = UP;
+                     break;
+                 }
         default:break;
         }
 
         NextPos = GetNextPosition(&game->snake);
-//        MOVETO(0,0);
-//        printf("%d,%d",game->snake.head->pos.x,game->snake.head->pos.y);
+        //        MOVETO(0,0);
+        //        printf("%d,%d",game->snake.head->pos.x,game->snake.head->pos.y);
         HeadAdd(&game->snake, &NextPos); 
 
         if(IsEat(&game->food, &game->snake)){
@@ -654,11 +636,11 @@ void GameRun(Game *game)
         else
             RemoveTail(&game->snake);
 
-//        DisPlaySnake(&game->snake);
+        //        DisPlaySnake(&game->snake);
 
-//      printf("%d:%d\n",input,input);
-//      DisPlayFoodPos(game);
-//      DisPlayHeadPos(game);
+        //      printf("%d:%d\n",input,input);
+        //      DisPlayFoodPos(game);
+        //      DisPlayHeadPos(game);
         DisPlayPressKey(game);
 
         speed = SpeedCtrl(game->snake.length);
@@ -679,73 +661,23 @@ void GameRun(Game *game)
         GameRun(game);
     }
 }
+#endif
 
-void menu(Game *game)
+void GameRun(Game *game)
 {
-    if(!game){
-        printf("Fatal error!");
-        GameQuit(game);
-    }
-
-
     GameInit(game);
-    ReadData(game);
-    char ch = 1;
-    while(ch != '0')
-    {
-        DisPlayMenu(game);
+    pthread_rwlock_init(&rwlock, NULL);
+    pthread_rwlockattr_init(&attr);
+    pthread_rwlockattr_setkind_np(&attr, PTHREAD_RWLOCK_PREFER_WRITER_NONRECURSIVE_NP); 
 
-        ch = getchar();
-        RefreshMap(game);
-        switch(ch)
-        {
-        case '0':{
-                    GameQuit(game);
-                    getchar();
-                    break;
-                 }
-        case '1':{
-                    GameInit(game);
-                    pthread_rwlock_init(&rwlock, NULL);
-                    pthread_rwlockattr_init(&attr);
-                    pthread_rwlockattr_setkind_np(&attr, PTHREAD_RWLOCK_PREFER_WRITER_NONRECURSIVE_NP); 
+    pthread_create(&Runner, NULL, run, (void*)game);
+    pthread_create(&Show, NULL, show, (void*)game);
+    pthread_create(&Listener, NULL, KeyBoardListener, (void*)game);
 
-                    pthread_create(&Runner, NULL, run, (void*)game);
-                    pthread_create(&Show, NULL, show, (void*)game);
-                    pthread_create(&Listener, NULL, KeyBoardListener, (void*)game);
-
-                    pthread_join(Listener, NULL);
-                    pthread_join(Runner, NULL);
-                    pthread_join(Show, NULL);
-                    CLEAR();
-                    break;
-                 }
-        case '2':{
-                     //todo
-                     //GameLoad(game);
-                     GameRun(game);
-                     break;
-                 }
-        case '3':{
-                     DisPlayScore_list(game);
-                     DisPlayMessage(game, "press [ENTER] to return menu");
-                     getchar();
-                     break;
-                 }
-        default:{
-                    break;
-                }
-        }
-    }
+    pthread_join(Listener, NULL);
+    pthread_join(Runner, NULL);
+    pthread_join(Show, NULL);
+    CLEAR();
 }
 
-int main()
-{
-    GameMode();
 
-    Game g;
-    srand((unsigned int)time(NULL));
-    menu(&g);
-
-    return 0;
-}

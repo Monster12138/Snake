@@ -1,5 +1,6 @@
-#include<unistd.h>
-#include"model.h"
+#include <unistd.h>
+#include <stdio.h>                                                                 
+#include "model.h"
 // 清除屏幕
 #define CLEAR() printf("\033[2J")
 

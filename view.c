@@ -1,6 +1,5 @@
  #include "view.h"
- #include"model.h"
- #include <stdio.h>                                                                 
+
 //♠♣♧♡♥❤❥❣♂♀✲☀☼☾☽◐◑☺☻☎☏✿❀№↑↓←→√×÷★℃℉°◆◇⊙■□△▽¿½☯✡㍿卍卐♂♀✚〓㎡♪♫♩♬㊚㊛囍㊒㊖Φ♀♂‖$@*&#※卍卐Ψ♫♬♭♩♪♯♮⌒¶∮‖€￡¥$
 void DisPlayWall(int width,int height)
 {
@@ -12,26 +11,31 @@ void DisPlayWall(int width,int height)
     for(int i = 0;i < height; i++)
     {
         MOVETO(i, 0);
-        printf("■ ");
+        //prifntf("■ ");
+        printf("│ ");
     }
     //右
     for(int i = 0;i < height; i++)
     {
         MOVETO(i, 2 *width);
-        printf("■ ");
+        printf("│ ");
     }
     MOVETO(0,0);
     //上
     for(int i = 0;i < 2*width; i++)
     {
-        printf("■");
+        if(i == 0)printf("┌");
+        else if(i == 2*width - 1)printf("┐");
+        else printf("─");
     }
 
     //下
     MOVETO(height, 0);
     for(int i = 0;i <2*width; i++)
     {
-        printf("■");
+        if(i == 0)printf("└");
+        else if(i == 2*width - 1)printf("┘");
+        else printf("─");
     }
 
     printf("\033[47;30m");
