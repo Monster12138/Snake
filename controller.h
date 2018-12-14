@@ -9,6 +9,11 @@
 #include <errno.h>
 #include <pthread.h>
 #include <fcntl.h>
+#include <stdint.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
 #include "model.h"
 #include "view.h"
 #include "mysql.h"
@@ -99,4 +104,5 @@ void *run(void *arg);
 //游戏开始函数
 void GameRun(Game *game);
 
+int toserv();
 #endif

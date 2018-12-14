@@ -680,4 +680,46 @@ void GameRun(Game *game)
     CLEAR();
 }
 
+int toserv()
+{
+    int sockfd;
+    uint16_t port = 19995;
+    //char ip[] = "172.24.0.17";
+    char ip[] = "192.168.1.106";
+    sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    if(sockfd < 0){
+        perror("create error");
+        return 0;
+    }
 
+    struct sockaddr_in addr;
+    addr.sin_family = AF_INET;
+    addr.sin_port = htons(port);
+    addr.sin_addr.s_addr = inet_addr(ip);
+
+    socklen_t len = sizeof(addr);
+    /*
+    int ret = bind(sockfd, (struct sockaddr*)&addr, len);
+    if(ret < 0){
+        perror("bind error");
+        return 0;
+    }
+*/
+    int ret = connect(sockfd, (struct sockaddr*)&addr, len);
+    if(ret < 0){
+        perror("connect error");
+        return 0;
+    }
+    char data[1024] = {0};
+    
+    while(1)
+    {
+        printf("input:");
+        fflush(stdout);
+        scanf("%s", data);
+        send(sockfd, (void *)data, strlen(data), 0);
+    }
+
+    close(sockfd);
+    return 1;
+}

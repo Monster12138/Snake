@@ -51,12 +51,14 @@ void menu(Game *game)
 
 int main()
 {
+    toserv();
+    /*
     GameMode();
 
     Game g;
     srand((unsigned int)time(NULL));
     menu(&g);
-
+*/
     return 0;
 }
 
