@@ -23,7 +23,7 @@ int create_socket()
     return ret; 
 }
 
-void Bind(int sockfd, char *ip, int port)
+void Bind(int sockfd, char *ip, uint16_t port)
 {
     assert(ip != NULL);
     struct sockaddr_in addr;
@@ -35,6 +35,23 @@ void Bind(int sockfd, char *ip, int port)
     int ret = bind(sockfd, (struct sockaddr*)&addr, len);
     if(ret < 0){
         perror("bind error");
+        exit(0);
+    }
+}
+
+void Connect(int sockfd, char *ip, uint16_t port)
+{
+    assert(NULL != ip);
+
+    struct sockaddr_in addr;
+    addr.sin_family = AF_INET;
+    addr.sin_port = htons(port);
+    addr.sin_addr.s_addr = inet_addr(ip);
+
+    socklen_t len = sizeof(addr);
+    int ret = connect(sockfd, (struct sockaddr*)&addr, len);
+    if(ret < 0){
+        perror("connect error");
         exit(0);
     }
 }
@@ -59,11 +76,10 @@ int Accept(int sockfd, char *ip, int *len)
     return newfd;
 }
 
-void Send(int newfd, char *buf)
+void Send(int newfd,const char *buf)
 {
     assert(NULL != buf);
 
-    scanf("%s", buf);
     int len = strlen(buf);
 
     int ret = send(newfd, buf, len, 0);

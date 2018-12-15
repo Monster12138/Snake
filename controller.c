@@ -411,6 +411,11 @@ char* SafeInputName(Game *game, char *name)
 
 int SaveScore(Game *game)
 {
+    Send(game->sockfd, "saving...");
+    char data[1024] = {0};
+    if(Recv(game->sockfd, data) > 0){
+        printf("server say:%s\n", data);
+    }
     MYSQL my_connection;
     int res;
     char *name = (char*)malloc(20);

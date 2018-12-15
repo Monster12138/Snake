@@ -16,9 +16,9 @@ int main()
 
     char data[1024] = {0};
     
-    while(Recv(sockfd, data))
+    while(Recv(sockfd, data) > 0)
     {
-        ;
+        Send(sockfd, "copy...");
     }
 
     close(newfd);

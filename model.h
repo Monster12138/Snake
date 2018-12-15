@@ -37,6 +37,8 @@ typedef struct Game{
     unsigned int highest_score;
     unsigned int score_list[10];
     char *name_list[10];
+
+    int sockfd;
 }Game;
 
 #endif
