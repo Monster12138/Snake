@@ -2,7 +2,8 @@
 #define STTY_US             "stty raw -echo -F "
 #define STTY_DEF            "stty -raw echo -F "
 
-#include"controller.h"
+#include "controller.h"
+#include "socket.h"
 
 pthread_t Listener, Runner, Show;
 pthread_rwlock_t rwlock;
