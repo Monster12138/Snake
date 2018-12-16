@@ -49,7 +49,6 @@ void menu(Game *game)
 }
 
 
-
 int main()
 {
     uint16_t port = 19994;
