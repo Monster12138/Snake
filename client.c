@@ -1,5 +1,4 @@
 #include "controller.h"
-#include "socket.h"
 
 void menu(Game *game)
 {
@@ -51,8 +50,8 @@ void menu(Game *game)
 
 int main()
 {
-    uint16_t port = 19994;
-    char ip[] = "192.168.1.106";
+    uint16_t port = 19995;
+    char ip[] = "192.168.43.137";
     GameMode();
 
     Game g;

@@ -3,7 +3,6 @@
 #define STTY_DEF            "stty -raw echo -F "
 
 #include "controller.h"
-#include "socket.h"
 
 pthread_t Listener, Runner, Show;
 pthread_rwlock_t rwlock;
@@ -411,11 +410,6 @@ char* SafeInputName(Game *game, char *name)
 
 int SaveScore(Game *game)
 {
-    Send(game->sockfd, "saving...");
-    char data[1024] = {0};
-    if(Recv(game->sockfd, data) > 0){
-        printf("server say:%s\n", data);
-    }
     MYSQL my_connection;
     int res;
     char *name = (char*)malloc(20);
@@ -468,8 +462,7 @@ int SaveScore(Game *game)
 
 bool DirCheck(int input, int lastDir)
 {
-    return (
-            (input == LEFT && lastDir == RIGHT)
+    return ((input == LEFT && lastDir == RIGHT)
             || (input == RIGHT && lastDir == LEFT)
             || (input == DOWN && lastDir == UP)
             || (input == UP && lastDir == DOWN));
@@ -479,21 +472,24 @@ void *KeyBoardListener(void *arg)
 {
     Game *game = (Game*)arg;
     int input = 32;
-    int lastDir;
     while(!GameOver(game))
     {
-        lastDir = game->snake.Dir;
         input = get_char();
-        if(DirCheck(input, lastDir))continue;
 
+        if(input == 0 )continue;
         pthread_rwlock_wrlock(&rwlock);
-        if(input == lastDir){
+        if(input == game->snake.Dir){
             game->speed = 3;
         }
-        else if(input == LEFT || input == RIGHT || input == UP || input == DOWN || input == PAUSE){
+        //else if(input == LEFT || input == RIGHT || input == UP || input == DOWN || input == PAUSE){
+        else{
             game->speed = SpeedCtrl(game->snake.length);
         }
-
+        if(DirCheck(input, game->snake.Dir)){
+            //任何的中途打断或者退出行为前都要解锁
+            pthread_rwlock_unlock(&rwlock);
+            continue;
+        }
         switch(input)
         {
         case 32:game->snake.Dir = PAUSE;break;
@@ -504,6 +500,8 @@ void *KeyBoardListener(void *arg)
         }
         pthread_rwlock_unlock(&rwlock);
     }
+    printf("KeyBoardListener exit!!\n");
+    sleep(2);
     //DisPlayMessage(game, "Listener exit!");
     return NULL;
 }
@@ -520,7 +518,18 @@ void *show(void *arg)
 
         pthread_rwlock_unlock(&rwlock);
     }
+    DisPlayMessage(game, "Game Over!");
+    sleep(1);
 
+    Send(game->sockfd, "saving...");
+    char data[1024] = {0};
+    if(Recv(game->sockfd, data) > 0){
+        printf("server say:%s\n", data);
+    }
+    if(game->score >= game->score_list[9]){
+        if(SaveScore(game))
+            ReadData(game);
+    }
     return NULL;
 }
 
@@ -554,14 +563,7 @@ void *run(void *arg)
 
         usleep(game->speed * 5 * 10000);
     }
-    DisPlayMessage(game, "Game Over!");
-    sleep(1);
-
-    if(game->score >= game->score_list[9]){
-        if(SaveScore(game))
-            ReadData(game);
-    }
-    /*
+   /*
        if(PlayAgain(game)){
        GameInit(game);
        run(game);
@@ -686,6 +688,8 @@ void GameRun(Game *game)
     CLEAR();
 }
 
+
+#if 0
 int toserv()
 {
     int sockfd;
@@ -729,3 +733,5 @@ int toserv()
     close(sockfd);
     return 1;
 }
+
+#endif

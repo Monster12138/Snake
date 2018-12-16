@@ -16,6 +16,7 @@
 #include <netinet/in.h>
 #include "model.h"
 #include "view.h"
+#include "socket.h"
 #include "mysql.h"
 
 //暂停
