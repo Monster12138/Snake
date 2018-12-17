@@ -500,8 +500,6 @@ void *KeyBoardListener(void *arg)
         }
         pthread_rwlock_unlock(&rwlock);
     }
-    printf("KeyBoardListener exit!!\n");
-    sleep(2);
     //DisPlayMessage(game, "Listener exit!");
     return NULL;
 }
