@@ -72,7 +72,7 @@ int Socket::Accept(char *ip, int *len)
     newfd = accept(_sockfd, (struct sockaddr*)&client_addr, &client_len);
     if(newfd < 0){
         perror("accept error");
-        exit(0);
+        return -1;
     }
 
     return newfd;

@@ -38,7 +38,6 @@ int main()
         cout << get_local_time() + "A client has leaved" << endl;
     }
 
-
     socket.Close();
     return 0;
 }
