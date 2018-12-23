@@ -15,7 +15,7 @@ public:
 
     int create_socket();
 
-    void Bind(char *ip, uint16_t port);
+    void Bind(uint16_t port);
 
     void Connect(char *ip, uint16_t port);
 

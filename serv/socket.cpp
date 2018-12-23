@@ -25,13 +25,13 @@ int Socket::create_socket(){
     return ret; 
 }
 
-void Socket::Bind(char *ip, uint16_t port)
+void Socket::Bind(uint16_t port)
 {
     assert(ip != NULL);
     struct sockaddr_in addr;
     addr.sin_family = AF_INET;
     addr.sin_port = htons(port);
-    addr.sin_addr.s_addr = inet_addr(ip);
+    addr.sin_addr.s_addr = INADDR_ANY;
 
     socklen_t len = sizeof(addr);
     int ret = bind(_sockfd, (struct sockaddr*)&addr, len);
