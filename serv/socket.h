@@ -1,8 +1,18 @@
 #ifndef _SOCKET_H_
 #define _SOCKET_H_
 
-#include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <stdint.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <arpa/inet.h>
+#include <errno.h>
+#include <netinet/in.h>
+#include <assert.h>
+
 #ifdef WIN32
 #include <windows.h>
 #else
@@ -21,7 +31,7 @@ public:
 
     void Listen(int blog);
 
-    int Accept(char *ip, int *len);
+    int Accept(struct sockaddr_in& clientAddr);
 
     void Send(const char *buf);
 

@@ -1,14 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <stdint.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <arpa/inet.h>
-#include <errno.h>
-#include <netinet/in.h>
-#include <assert.h>
 #include "socket.h"
 
 void Socket::setSockfd(int sockfd)
@@ -58,18 +47,17 @@ void Socket::Connect(char *ip, uint16_t port)
     }
 }
 
-void Socket::Listen(int blog)
+void Socket::Listen(int backlog)
 {
-    listen(_sockfd, blog);
+    listen(_sockfd, backlog);
 }
 
-int Socket::Accept(char *ip, int *len)
+int Socket::Accept(struct sockaddr_in& clientAddr)
 {
     int newfd;
-    struct sockaddr_in client_addr;
-    socklen_t client_len;
+    socklen_t client_len = sizeof(clientAddr);
 
-    newfd = accept(_sockfd, (struct sockaddr*)&client_addr, &client_len);
+    newfd = accept(_sockfd, (struct sockaddr*)&clientAddr, &client_len);
     if(newfd < 0){
         perror("accept error");
         return -1;
