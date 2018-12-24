@@ -1,5 +1,6 @@
 #include "socket.h"
 #include "mytime.h"
+#include "controller.h"
 #include <ctime>
 #include <string>
 #include <iostream>
@@ -18,6 +19,8 @@ void Run(Socket& listenSock)
 {
     while(1)
     {
+        Game g;
+        GameInit(&g);
         int newfd;
         Socket newsocket;
         struct sockaddr_in clientAddr;
