@@ -2,11 +2,15 @@
 #include <string>
 #include <iostream>
 #include "mytime.h"
+#include <mysql.h>
 
 class DataBase
 {
 public:
     DataBase() 
+    {}
+
+    void init()
     {
         mysql_init(&mysql);
     }
@@ -14,8 +18,11 @@ public:
     bool Connect(const std::string &ip, 
                  const std::string &id, 
                  const std::string &pswd, 
-                 const std::string &dbName)const
+                 const std::string &dbName)
     {
+    if (mysql_real_connect(&mysql, "39.108.227.206",
+                           "zzz", "123456", "Snake", 0, NULL, 0)) {
+    }
         if(!mysql_real_connect(&mysql, 
                                ip.c_str(), 
                                id.c_str(), 
@@ -57,13 +64,13 @@ public:
         }
     }
 
-    bool ReadData(std::string &sqlStr, std::string name[10], int score[10])
+    bool ReadData(const std::string &sqlStr, std::string name[10], uint score[10])
     {
         MYSQL_RES *res;
         MYSQL_ROW row;
         int i = 0;
         mysql_real_query(&mysql, sqlStr.c_str(), sqlStr.size());
-        if(res = mysql_store_result(&mysql) == nullptr){
+        if((res = mysql_store_result(&mysql)) == nullptr){
             std::cout << get_local_time() 
                 << "ReadData error" 
                 << mysql_errno(&mysql) 
@@ -76,8 +83,8 @@ public:
         while(i < 10)
         {
             if(row = mysql_fetch_row(res)){
-                name = res[0];
-                sscanf(row[1], "%d", &score[i]);
+                name[i].assign(row[0]);
+                sscanf(row[1], "%u", &score[i]);
             }
             else {
                 name[i] = (char*)"---";

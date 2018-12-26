@@ -14,6 +14,7 @@
 #include <sys/types.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#include <mysql.h>
 #include "model.h"
 #include "view.h"
 #include "socket.h"

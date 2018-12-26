@@ -23,7 +23,7 @@ class Socket{
 public:
     void setSockfd(int sockfd);
 
-    int create_socket();
+    void create_socket();
 
     void Bind(uint16_t port);
 

@@ -3,6 +3,7 @@
 
 #include <list>
 
+typedef unsigned int uint;
 typedef enum {
     PAUSE = 32,
     LEFT = 97,
@@ -32,7 +33,7 @@ class Snake
 {
 public:
     Snake()
-        :head(nullptr), tail(nullptr), length(0), speed(0), Dir(PAUSE), l() 
+        :head(nullptr), tail(nullptr), length(0), speed(0), score(0), Dir(PAUSE), l() 
     {}
 
     ~Snake()
@@ -53,16 +54,21 @@ public:
 
         length = 3;
         speed = 10;
+        score = 0;
         Dir = RIGHT;
     }
 
     Direction getDir()const { return Dir; }
 
-    unsigned int getLength()const {return length; }
+    uint getLength()const {return length; }
 
     Node* getHead()const { return head; }
 
     Node* getTail()const { return tail; }
+
+    uint getScore()const { return score; }
+
+    void addSore(int n) { score += n; }
 
     void speedCtrl()
     {
@@ -77,6 +83,19 @@ public:
     {
         return food.getx() == head->getx()
             && food.gety() == head->gety();
+    }
+
+    bool isOnSnake(int x, int y)
+    {
+        auto it = l.begin();
+        ++it;
+        for(; it != l.end(); ++it)
+        {
+            if(x == (*it)->getx() && y == (*it)->gety() ){
+                return true;
+            }
+        }
+        return false;
     }
 
     void headAdd(const Node& next)
@@ -112,15 +131,15 @@ public:
                 return true;
             }
         }
-
         return false;
     }
 
 private:
     Node *head;
     Node *tail;
-    unsigned int length;
-    unsigned int speed;
+    uint length;
+    uint speed;
+    uint score;
     Direction Dir;
     std::list<Node*> l;
 };

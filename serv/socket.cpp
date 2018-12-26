@@ -5,18 +5,16 @@ void Socket::setSockfd(int sockfd)
     _sockfd = sockfd;
 }
 
-int Socket::create_socket(){
-    int ret = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    if(ret < 0){
+void Socket::create_socket(){
+    _sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    if(_sockfd < 0){
         perror("create error");
-        exit(0);
+        exit(2);
     }
-    return ret; 
 }
 
 void Socket::Bind(uint16_t port)
 {
-    assert(ip != NULL);
     struct sockaddr_in addr;
     addr.sin_family = AF_INET;
     addr.sin_port = htons(port);

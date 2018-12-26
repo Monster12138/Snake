@@ -283,6 +283,7 @@ bool KilledBySelf(const Snake *snake)
     }
     pthread_rwlock_unlock(&rwlock);
     return false;
+
 }
 
 //判断游戏是否结束
