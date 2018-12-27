@@ -40,12 +40,12 @@ void Run(Socket& listenSock)
                 strx[1] = data[1];
                 strx[2] = '\0';
 
-
                 char stry[3];
                 stry[0] = data[2];
                 stry[1] = data[3];
                 stry[2] = '\0';
 
+                cout << "x:" << atoi(strx) << "   " << "y:" << atoi(strx) << endl;
                 Position next(atoi(strx), atoi(stry));
 
                 g.getSnake().headAdd(next);
