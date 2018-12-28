@@ -9,7 +9,7 @@ void menu(Game *game)
 
 
     GameInit(game);
-    ReadData(game);
+    //ReadData(game);
     char ch = 1;
     while(ch != '0')
     {
