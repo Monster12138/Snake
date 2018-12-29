@@ -31,7 +31,7 @@ public:
         do{
             x = rand()%width;
             y = rand()%height;
-        }while(!snake.isOnSnake(x, y));
+        }while(snake.isOnSnake(x, y));
     }
         
     void init()
@@ -43,7 +43,7 @@ public:
         freshFood();
 
         memset(rank_score, 10, sizeof(uint));
-        
+#if 0
         db.init();
         if(db.Connect("39.108.227.206", "zzz", "123456", "Snake")){
             db.ReadData("select * from score order by result desc", name, rank_score);
@@ -51,6 +51,7 @@ public:
         else {
             exit(1);
         }
+#endif
     }
 
     bool gameOver()

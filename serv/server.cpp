@@ -13,19 +13,39 @@ void init(Socket& socket, uint16_t port, int backlog)
     socket.Bind(port);    
 
     socket.Listen(backlog);
+
+    cout << get_local_time() <<  "init success!" << endl;
 }
 
 void Run(Socket& listenSock)
 {
+#if 0
+    while(1)
+    {
+        struct sockaddr_in clientAddr;
+        Socket newsocket;
+        int newfd = listenSock.Accept(clientAddr);
+        newsocket.setSockfd(newfd);
+        string clientIp = inet_ntoa(clientAddr.sin_addr);
+        uint16_t clientPort = ntohs(clientAddr.sin_port);
+        cout << get_local_time() + "client " << clientIp << ":" << clientPort <<" has connected" << endl;
+        char data[1024] = {0};
+        while(newsocket.Recv(data))
+        {
+            printf("%s\n", data);
+        }
+        newsocket.Close();
+#endif
     while(1)
     {
         Game g;
         g.init();
+        cout << "Accept start" << endl;
         int newfd;
         Socket newsocket;
         struct sockaddr_in clientAddr;
         char data[1024] = {0};
-        
+
         if((newfd = listenSock.Accept(clientAddr)) > 0)
         {
             newsocket.setSockfd(newfd);
@@ -33,7 +53,19 @@ void Run(Socket& listenSock)
             uint16_t clientPort = ntohs(clientAddr.sin_port);
             cout << get_local_time() + "client " << clientIp << ":" << clientPort <<" has connected" << endl;
 
-            while(newsocket.Recv(data) == 4)
+            while(newsocket.Recv(data))
+            {
+                if(data[0] == '0')break;
+                else if(data[0] == '1'){
+                    gameRun();
+                }
+                else if(data[0] == '2'){
+                    ;
+                }
+                else {
+
+            }
+            while(newsocket.Recv(data))
             {
                 char strx[3];
                 strx[0] = data[0];
@@ -47,7 +79,7 @@ void Run(Socket& listenSock)
 
                 cout << "x:" << atoi(strx) << "   " << "y:" << atoi(strx) << endl;
                 Position next(atoi(strx), atoi(stry));
-
+#if 0
                 g.getSnake().headAdd(next);
                 
                 if(!g.getSnake().eatFood(next)){
@@ -60,7 +92,7 @@ void Run(Socket& listenSock)
                 } else {
                     newsocket.Send("F");
                 }
-
+#endif
                 memset(data, 1024, '\0');
             }
 
@@ -70,7 +102,6 @@ void Run(Socket& listenSock)
         else{
             cout << get_local_time() + "Accept error" << endl;
         }
-
     }
 }
 
@@ -81,8 +112,8 @@ int main(int argc, char* argv[])
         cout << "Usage: Please Enter:" << argv[0] << " port" << endl;
         exit(1);
     }
-    FILE *stream;
-    stream = freopen("./log/serverLog.log", "a+", stdout);
+//    FILE *stream;
+//    stream = freopen("./log/serverLog.log", "a+", stdout);
 
     Socket socket;
     socket.create_socket();

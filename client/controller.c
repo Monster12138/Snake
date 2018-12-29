@@ -519,11 +519,6 @@ void *show(void *arg)
     DisPlayMessage(game, "Game Over!");
     sleep(1);
 
-    Send(game->sockfd, "saving...");
-    char data[1024] = {0};
-    if(Recv(game->sockfd, data) > 0){
-        printf("server say:%s\n", data);
-    }
     if(game->score >= game->score_list[9]){
         if(SaveScore(game))
             ReadData(game);
@@ -536,10 +531,14 @@ void *run(void *arg)
     Game *game = (Game*)arg;
     Position NextPos;
     game->food = Generatefood(game);
+    int flag = 1;
+    char data[1024] = {0};
     while(!GameOver(game))
     {
         pthread_rwlock_wrlock(&rwlock);
         NextPos = GetNextPosition(&game->snake);
+        sprintf(data, "%d%d", NextPos.x, NextPos.y);
+        Send(game->sockfd, data);
         //        MOVETO(0,0);
         //        printf("%d,%d",game->snake.head->pos.x,game->snake.head->pos.y);
         HeadAdd(&game->snake, &NextPos); 

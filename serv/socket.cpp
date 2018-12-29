@@ -87,7 +87,6 @@ int Socket::Recv(char *buf)
         perror("recv error");
         exit(0);
     }
-    printf("buf :%s\n", buf);
 
     return ret;
 }

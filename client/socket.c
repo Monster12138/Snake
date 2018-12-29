@@ -36,7 +36,7 @@ void Bind(int sockfd, char *ip, uint16_t port)
     }
 }
 
-void Connect(int sockfd, char *ip, uint16_t port)
+void Connect(int sockfd,const char *ip, uint16_t port)
 {
     assert(NULL != ip);
 

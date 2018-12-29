@@ -29,12 +29,6 @@ void menu(Game *game)
                      break;
                  }
         case '2':{
-                     //todo
-                     //GameLoad(game);
-                     GameRun(game);
-                     break;
-                 }
-        case '3':{
                      DisPlayScore_list(game);
                      DisPlayMessage(game, "press [ENTER] to return menu");
                      getchar();
@@ -50,8 +44,8 @@ void menu(Game *game)
 
 int main()
 {
-    uint16_t port = 19995;
-    char ip[] = "192.168.43.137";
+    uint16_t port = 8888;
+    char ip[] = "172.20.166.4";
     GameMode();
 
     Game g;
