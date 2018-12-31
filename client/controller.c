@@ -553,7 +553,6 @@ void *run(void *arg)
 
         pthread_rwlock_unlock(&rwlock);
         //        DisPlaySnake(&game->snake);
-
         //      printf("%d:%d\n",input,input);
         //      DisPlayFoodPos(game);
         //      DisPlayHeadPos(game);
@@ -732,3 +731,16 @@ int toserv()
 }
 
 #endif
+
+
+
+
+
+
+
+
+
+
+
+
+
