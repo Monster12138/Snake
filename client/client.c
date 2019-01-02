@@ -1,24 +1,5 @@
 #include "controller.h"
 
-
-void menu(Game *game);
-
-int main()
-{
-    uint16_t port = 8888;
-    char ip[] = "172.20.166.4";
-    GameMode();
-
-    Game g;
-    g.sockfd = create_socket();
-    Connect(g.sockfd, ip, port);
-    srand((unsigned int)time(NULL));
-    menu(&g);
-
-    close(g.sockfd);
-    return 0;
-}
-
 void menu(Game *game)
 {
     if(!game){
@@ -58,5 +39,22 @@ void menu(Game *game)
                 }
         }
     }
+}
+
+
+int main()
+{
+    uint16_t port = 8888;
+    char ip[] = "172.20.166.4";
+    GameMode();
+
+    Game g;
+    g.sockfd = create_socket();
+    Connect(g.sockfd, ip, port);
+    srand((unsigned int)time(NULL));
+    menu(&g);
+
+    close(g.sockfd);
+    return 0;
 }
 
