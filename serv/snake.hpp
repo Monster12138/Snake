@@ -2,6 +2,7 @@
 #define _SNAKE_HPP_
 
 #include <list>
+#include <iostream>
 
 typedef unsigned int uint;
 typedef enum {
@@ -118,6 +119,9 @@ public:
             || head->getx() <= 1
             || head->gety() <= 0;
 
+        if(ret == true){
+            std::cout << "KilledByWall!" << std::endl;
+        }
         return ret;
     }
 
@@ -128,6 +132,7 @@ public:
         for(; it != l.end(); ++it)
         {
             if(head->getx() == (*it)->getx() && head->gety() == (*it)->gety() ){
+                std::cout << "KilledBySelf!" << std::endl;
                 return true;
             }
         }

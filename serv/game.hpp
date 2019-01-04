@@ -5,6 +5,7 @@
 #include <string.h>
 #include "DataBase.hpp"
 #include "snake.hpp"
+#include "socket.h"
 
 class Game
 {
@@ -61,9 +62,25 @@ public:
         return b;
     }
 
-    void run()
+    void run(Socket &socket )
     {
-        init();
+        Position NextPos;
+        while(socket.Recv(&NextPos, sizeof(NextPos)))
+        {
+            std::cout << "x:" << NextPos.getx() << "   y:" << NextPos.gety() << std::endl;
+            snake.headAdd(NextPos);
+
+            if(!snake.eatFood(NextPos)){
+                snake.tailRemove();
+            }
+
+            bool isOver = gameOver();
+            socket.Send(&isOver, sizeof(isOver));
+            if(isOver){
+                std::cout << "Game Over!" << std::endl;
+                break;
+            }
+        }
     }
 private:
     Position food;

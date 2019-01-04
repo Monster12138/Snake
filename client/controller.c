@@ -532,13 +532,12 @@ void *run(void *arg)
     Position NextPos;
     game->food = Generatefood(game);
     int flag = 1;
-    char data[1024] = {0};
+    bool isOver = false;
     while(!GameOver(game))
     {
         pthread_rwlock_wrlock(&rwlock);
         NextPos = GetNextPosition(&game->snake);
-        sprintf(data, "%d%d", NextPos.x, NextPos.y);
-        Send(game->sockfd, data);
+        Send(game->sockfd, &NextPos, sizeof(NextPos));
         //        MOVETO(0,0);
         //        printf("%d,%d",game->snake.head->pos.x,game->snake.head->pos.y);
         HeadAdd(&game->snake, &NextPos); 
@@ -557,6 +556,7 @@ void *run(void *arg)
         //      DisPlayFoodPos(game);
         //      DisPlayHeadPos(game);
 
+        Recv(game->sockfd, &isOver, sizeof(isOver));
         usleep(game->speed * 5 * 10000);
     }
    /*

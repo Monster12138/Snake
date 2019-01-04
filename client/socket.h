@@ -15,8 +15,8 @@ void Listen(int sockfd, int blog);
 
 int Accept(int sockfd, char *ip, int *len);
 
-void Send(int newfd,const char *buf);
+void Send(int newfd,const void *buf, int len);
 
-int Recv(int newfd, char *buf);
+int Recv(int newfd, void *buf, int len);
 
 #endif

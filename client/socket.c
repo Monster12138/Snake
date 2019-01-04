@@ -73,11 +73,9 @@ int Accept(int sockfd, char *ip, int *len)
     return newfd;
 }
 
-void Send(int newfd,const char *buf)
+void Send(int newfd,const void *buf, int len)
 {
     assert(NULL != buf);
-
-    int len = strlen(buf);
 
     int ret = send(newfd, buf, len, 0);
     if(ret < 0){
@@ -86,17 +84,15 @@ void Send(int newfd,const char *buf)
     }
 }
 
-int Recv(int newfd, char *buf)
+int Recv(int newfd, void *buf, int len)
 {
     assert(buf != NULL);
     
-    memset(buf, 0, 1024);
-    int ret = recv(newfd, (void *)buf, 1024, 0);
+    int ret = recv(newfd, buf, len, 0);
     if(ret < 0){
         perror("recv error");
         exit(0);
     }
-    printf("buf :%s\n", buf);
 
     return ret;
 }

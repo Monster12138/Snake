@@ -5,6 +5,8 @@ void Socket::setSockfd(int sockfd)
     _sockfd = sockfd;
 }
 
+int Socket::getSockfd() { return _sockfd; }
+
 void Socket::create_socket(){
     _sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if(_sockfd < 0){
@@ -64,11 +66,9 @@ int Socket::Accept(struct sockaddr_in& clientAddr)
     return newfd;
 }
 
-void Socket::Send(const char *buf)
+void Socket::Send(const void *buf, int len)
 {
     assert(NULL != buf);
-
-    int len = strlen(buf);
 
     int ret = send(_sockfd, buf, len, 0);
     if(ret < 0){
@@ -77,12 +77,11 @@ void Socket::Send(const char *buf)
     }
 }
 
-int Socket::Recv(char *buf)
+int Socket::Recv(void *buf, int len)
 {
     assert(buf != NULL);
     
-    memset(buf, 0, 1024);
-    int ret = recv(_sockfd, (void *)buf, 1024, 0);
+    int ret = recv(_sockfd, buf, len, 0);
     if(ret < 0){
         perror("recv error");
         exit(0);

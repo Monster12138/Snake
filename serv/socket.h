@@ -22,6 +22,8 @@
 class Socket{
 public:
     void setSockfd(int sockfd);
+    
+    int getSockfd();
 
     void create_socket();
 
@@ -33,9 +35,9 @@ public:
 
     int Accept(struct sockaddr_in& clientAddr);
 
-    void Send(const char *buf);
+    void Send(const void *buf, int len);
 
-    int Recv(char *buf);
+    int Recv(void *buf, int len);
 
     void Close();
 private:

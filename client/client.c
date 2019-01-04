@@ -16,6 +16,8 @@ void menu(Game *game)
         DisPlayMenu(game);
 
         ch = getchar();
+
+        Send(game->sockfd, &ch, sizeof(ch)); 
         RefreshMap(game);
         switch(ch)
         {
@@ -45,7 +47,8 @@ void menu(Game *game)
 int main()
 {
     uint16_t port = 8888;
-    char ip[] = "172.20.166.4";
+    char ip[] = "172.29.40.7";
+    //char ip[] = "192.168.43.137";
     GameMode();
 
     Game g;
