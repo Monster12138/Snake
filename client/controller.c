@@ -531,9 +531,8 @@ void *run(void *arg)
     Game *game = (Game*)arg;
     Position NextPos;
     game->food = Generatefood(game);
-    int flag = 1;
     bool isOver = false;
-    while(!GameOver(game))
+    while(!isOver)
     {
         pthread_rwlock_wrlock(&rwlock);
         NextPos = GetNextPosition(&game->snake);
