@@ -30,9 +30,10 @@ public:
     {
         int x, y;
         do{
-            x = rand()%width;
-            y = rand()%height;
+            x = rand()%width + 1;
+            y = rand()%height + 1;
         }while(snake.isOnSnake(x, y));
+        food.setPos(x, y);
     }
         
     void init()
@@ -42,6 +43,7 @@ public:
         highest_score = 0;
         
         freshFood();
+        srand(time(NULL));
 
         memset(rank_score, 10, sizeof(uint));
 #if 0
@@ -65,12 +67,19 @@ public:
     void run(Socket &socket )
     {
         Position NextPos;
+        freshFood();
+        socket.Send(&food, sizeof(food));
         while(socket.Recv(&NextPos, sizeof(NextPos)))
         {
+
+            std::cout << "foodx:" << food.getx() << "   foody:" << food.gety() << std::endl;
             std::cout << "x:" << NextPos.getx() << "   y:" << NextPos.gety() << std::endl;
             snake.headAdd(NextPos);
 
-            if(!snake.eatFood(NextPos)){
+            if(snake.eatFood(food)){
+                freshFood();
+                socket.Send(&food, sizeof(food)); 
+            } else {
                 snake.tailRemove();
             }
 

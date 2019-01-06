@@ -511,6 +511,7 @@ void *show(void *arg)
     {
         pthread_rwlock_wrlock(&rwlock);
 
+        DisPlayFood(&game->food);
         DisPlayPressKey(game);
         DisPlayL_S(game,10 - game->speed + 1);
 
@@ -530,8 +531,9 @@ void *run(void *arg)
 {
     Game *game = (Game*)arg;
     Position NextPos;
-    game->food = Generatefood(game);
+//    game->food = Generatefood(game);
     bool isOver = false;
+    Recv(game->sockfd, &game->food, sizeof(game->food));
     while(!isOver)
     {
         pthread_rwlock_wrlock(&rwlock);
@@ -542,7 +544,7 @@ void *run(void *arg)
         HeadAdd(&game->snake, &NextPos); 
 
         if(IsEat(&game->food, &game->snake)){
-            game->food = Generatefood(game);
+            Recv(game->sockfd, &game->food, sizeof(game->food));
             game->score+=10;
             game->snake.length++;
         }

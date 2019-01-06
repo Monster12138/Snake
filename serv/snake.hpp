@@ -112,7 +112,7 @@ public:
     void tailRemove()
     {
         l.pop_back();
-        std::cout << "headAdd" << std::endl;
+        std::cout << "tailRemove" << std::endl;
     }
 
     bool killedByWall(int width, int height)
