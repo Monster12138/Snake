@@ -105,11 +105,14 @@ public:
         l.push_front(newNode);
 
         head = l.front();
+
+        std::cout << "headAdd" << std::endl;
     }
 
     void tailRemove()
     {
         l.pop_back();
+        std::cout << "headAdd" << std::endl;
     }
 
     bool killedByWall(int width, int height)
