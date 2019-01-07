@@ -49,7 +49,9 @@ void Run(Socket& listenSock)
                     g.run(newsocket);
                 }
                 else if(ch == '2'){
-                    ;
+                    g.getDb().ReadData("select * from score order by result desc", g.name, g.rank_score);
+                    newsocket.Send(&g.rank_score, sizeof(g.rank_score));
+                    newsocket.Send(&g.name, sizeof(g.name));
                 }
                 else {
                     continue;

@@ -106,13 +106,13 @@ public:
 
         head = l.front();
 
-        std::cout << "headAdd" << std::endl;
+//        std::cout << "headAdd" << std::endl;
     }
 
     void tailRemove()
     {
         l.pop_back();
-        std::cout << "tailRemove" << std::endl;
+//        std::cout << "tailRemove" << std::endl;
     }
 
     bool killedByWall(int width, int height)

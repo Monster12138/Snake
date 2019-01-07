@@ -20,9 +20,7 @@ public:
                  const std::string &pswd, 
                  const std::string &dbName)
     {
-    if (mysql_real_connect(&mysql, "39.108.227.206",
-                           "zzz", "123456", "Snake", 0, NULL, 0)) {
-    }
+
         if(!mysql_real_connect(&mysql, 
                                ip.c_str(), 
                                id.c_str(), 
@@ -32,7 +30,7 @@ public:
             if (mysql_error(&mysql)) {
                 //printf("Connection error %d: %s\n", mysql_errno(&mysql), mysql_error(&mysql));
                 std::cout << get_local_time() 
-                    << "Connection error" 
+                    << "Connection error " 
                     << mysql_errno(&mysql) 
                     << ':'
                     << mysql_error(&mysql)

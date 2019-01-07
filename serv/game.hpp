@@ -25,6 +25,8 @@ public:
     Position& getFoodPos() { return food; }
 
     Snake& getSnake() { return snake; }
+    
+    DataBase getDb() { return db; }
 
     void freshFood()
     {
@@ -46,7 +48,7 @@ public:
         srand(time(NULL));
 
         memset(rank_score, 10, sizeof(uint));
-#if 0
+        
         db.init();
         if(db.Connect("39.108.227.206", "zzz", "123456", "Snake")){
             db.ReadData("select * from score order by result desc", name, rank_score);
@@ -54,7 +56,6 @@ public:
         else {
             exit(1);
         }
-#endif
     }
 
     bool gameOver()
@@ -91,6 +92,8 @@ public:
             }
         }
     }
+    uint rank_score[10];
+    std::string name[10];
 private:
     Position food;
     Snake snake;
@@ -98,8 +101,6 @@ private:
     uint width;
     uint height;
     uint highest_score;
-    uint rank_score[10];
-    std::string name[10];
     
     DataBase db;
 };
