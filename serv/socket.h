@@ -35,9 +35,9 @@ public:
 
     int Accept(struct sockaddr_in& clientAddr);
 
-    void Send(const void *buf, int len);
+    void Send(const void *buf, int len)const;
 
-    int Recv(void *buf, int len);
+    int Recv(void *buf, int len)const;
 
     void Close();
 private:

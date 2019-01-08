@@ -90,6 +90,14 @@ void GameQuit(Game *game)
 
 int ReadData(Game *game)
 {
+    Recv(game->sockfd, &game->score_list, sizeof(game->score_list));
+    for(int i = 0; i < 10; ++i)
+    {
+        char *p = (char*)malloc(20);
+        Recv(game->sockfd, p, 20);
+        game->name_list[i] = p;
+    }
+#if 0
     MYSQL my_connection;
     MYSQL_RES *res;
     MYSQL_ROW row;
@@ -140,6 +148,7 @@ int ReadData(Game *game)
         GameQuit(game);
         return 0;
     }
+#endif
 }
 
 
@@ -205,16 +214,11 @@ void GameInit(Game *game)
     game->speed = 10;
 
     SnakeInit(&game->snake);
+    ReadData(game);
+    game->highest_score = game->score_list[0];
 
     game->food.x = 0;
     game->food.y = 0;
-
-    memset(game->score_list,10,sizeof(unsigned int));
-
-    for(int i = 0; i < 10; i++)
-    {
-        game->name_list[i] = NULL;
-    }
 
     RefreshMap(game);
 }
@@ -521,8 +525,7 @@ void *show(void *arg)
     sleep(1);
 
     if(game->score >= game->score_list[9]){
-        if(SaveScore(game))
-            ReadData(game);
+        SaveScore(game);
     }
     return NULL;
 }

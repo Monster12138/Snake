@@ -66,7 +66,7 @@ int Socket::Accept(struct sockaddr_in& clientAddr)
     return newfd;
 }
 
-void Socket::Send(const void *buf, int len)
+void Socket::Send(const void *buf, int len)const
 {
     assert(NULL != buf);
 
@@ -77,7 +77,7 @@ void Socket::Send(const void *buf, int len)
     }
 }
 
-int Socket::Recv(void *buf, int len)
+int Socket::Recv(void *buf, int len)const
 {
     assert(buf != NULL);
     

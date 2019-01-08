@@ -31,6 +31,7 @@ void menu(Game *game)
                      break;
                  }
         case '2':{
+                     ReadData(game);
                      DisPlayScore_list(game);
                      DisPlayMessage(game, "press [ENTER] to return menu");
                      getchar();
@@ -47,9 +48,9 @@ void menu(Game *game)
 int main()
 {
     uint16_t port = 8888;
-    //char ip[] = "172.29.40.7";        
+    char ip[] = "172.29.40.7";        
     //char ip[] = "192.168.43.137";
-    char ip[] = "192.168.1.108";
+    //char ip[] = "192.168.1.108";
     GameMode();
 
     Game g;

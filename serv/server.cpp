@@ -17,6 +17,20 @@ void init(Socket& socket, uint16_t port, int backlog)
     cout << get_local_time() <<  "init success!" << endl;
 }
 
+void SendRank(Game &g, const Socket& newsocket)
+{
+    g.getDb().ReadData("select * from score order by result desc", g.name, g.rank_score);
+    cout << "Send start" << endl;
+    newsocket.Send(&g.rank_score, sizeof(g.rank_score));
+    for(int i = 0; i < 10; ++i)
+    {
+        char tmp[20] = {0};
+        strcpy(tmp, g.name[i].c_str());
+        newsocket.Send(tmp, 20);
+    }
+    cout << "Send finish" << endl;
+}
+
 void Run(Socket& listenSock)
 {
     while(1)
@@ -41,6 +55,8 @@ void Run(Socket& listenSock)
             uint16_t clientPort = ntohs(clientAddr.sin_port);
             cout << get_local_time() + "client " << clientIp << ":" << clientPort <<" has connected" << endl;
 
+            SendRank(g, newsocket);
+
             while(newsocket.Recv(&ch, sizeof(ch)))
             {
                 cout << "进入菜单，选项为" << ch << endl;
@@ -49,9 +65,7 @@ void Run(Socket& listenSock)
                     g.run(newsocket);
                 }
                 else if(ch == '2'){
-                    g.getDb().ReadData("select * from score order by result desc", g.name, g.rank_score);
-                    newsocket.Send(&g.rank_score, sizeof(g.rank_score));
-                    newsocket.Send(&g.name, sizeof(g.name));
+                    SendRank(g, newsocket);
                 }
                 else {
                     continue;

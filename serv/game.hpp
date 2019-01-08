@@ -11,7 +11,7 @@ class Game
 {
 public:
     Game()
-        :food(0,0),snake(),width(0),height(0),highest_score(0),rank_score(),name(), db()
+        :rank_score(),name(),food(0,0),snake(),width(0),height(0),highest_score(0), db()
     {}
 
     ~Game() {}
@@ -70,6 +70,8 @@ public:
         Position NextPos;
         freshFood();
         socket.Send(&food, sizeof(food));
+        
+        std::cout << "Send food!" << std::endl;
         while(socket.Recv(&NextPos, sizeof(NextPos)))
         {
 
