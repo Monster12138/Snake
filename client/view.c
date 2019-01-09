@@ -160,7 +160,7 @@ void DisPlayMenu(Game *game)
     MOVETO(game->height/3 + 1, game->width - 4);
     printf("1.开始新游戏");
 
-    MOVETO(game->height/3 + 5, game->width - 4);
+    MOVETO(game->height/3 + 4, game->width - 4);
     printf("2.排行榜");
 
     MOVETO(game->height/3 + 7, game->width - 4);

@@ -51,6 +51,7 @@ int main()
     char ip[] = "172.29.40.7";        
     //char ip[] = "192.168.43.137";
     //char ip[] = "192.168.1.108";
+
     GameMode();
 
     Game g;

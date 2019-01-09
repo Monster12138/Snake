@@ -26,7 +26,7 @@ void SendRank(Game &g, const Socket& newsocket)
     {
         char tmp[20] = {0};
         strcpy(tmp, g.name[i].c_str());
-        newsocket.Send(tmp, 20);
+        newsocket.Send(tmp, g.name[i].size() + 1);
     }
     cout << "Send finish" << endl;
 }

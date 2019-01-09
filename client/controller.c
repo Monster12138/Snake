@@ -95,6 +95,7 @@ int ReadData(Game *game)
     {
         char *p = (char*)malloc(20);
         Recv(game->sockfd, p, 20);
+        printf("%s\n", p);
         game->name_list[i] = p;
     }
 #if 0
