@@ -90,12 +90,17 @@ void GameQuit(Game *game)
 
 int ReadData(Game *game)
 {
+    FILE* fp = fopen("./log/clientLog.log", "a+");
+    if(fp == NULL){
+        return -1;
+    }
+
     Recv(game->sockfd, &game->score_list, sizeof(game->score_list));
     for(int i = 0; i < 10; ++i)
     {
         char *p = (char*)malloc(20);
         Recv(game->sockfd, p, 20);
-        printf("%s\n", p);
+        fprintf(fp, "%s\n", p);
         game->name_list[i] = p;
     }
 #if 0
