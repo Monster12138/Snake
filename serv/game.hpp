@@ -11,7 +11,7 @@ class Game
 {
 public:
     Game()
-        :rank_score(),name(),food(0,0),snake(),width(0),height(0),highest_score(0), db()
+        :rank_score(),name(),food(0,0),snake(),width(0),height(0),highest_score(0)
     {}
 
     ~Game() {}
@@ -26,8 +26,6 @@ public:
 
     Snake& getSnake() { return snake; }
     
-    DataBase getDb() { return db; }
-
     void freshFood()
     {
         int x, y;
@@ -49,14 +47,7 @@ public:
 
         memset(rank_score, 10, sizeof(uint));
         
-        db.init();
-        if(db.Connect("39.108.227.206", "zzz", "123456", "Snake")){
-            db.ReadData("select * from score order by result desc", name, rank_score);
-        }
-        else {
-            exit(1);
-        }
-    }
+   }
 
     bool gameOver()
     {
@@ -74,7 +65,6 @@ public:
         std::cout << "Send food!" << std::endl;
         while(socket.Recv(&NextPos, sizeof(NextPos)))
         {
-
             std::cout << "foodx:" << food.getx() << "   foody:" << food.gety() << std::endl;
             std::cout << "x:" << NextPos.getx() << "   y:" << NextPos.gety() << std::endl;
             snake.headAdd(NextPos);
@@ -104,7 +94,6 @@ private:
     uint height;
     uint highest_score;
     
-    DataBase db;
 };
 
 

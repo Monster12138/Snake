@@ -18,15 +18,25 @@ void init(Socket& socket, uint16_t port, int backlog)
 }
 
 void SendRank(Game &g, const Socket& newsocket)
-{
-    g.getDb().ReadData("select * from score order by result desc", g.name, g.rank_score);
+{        
+    DataBase db;
+    db.init();
+    if(db.Connect("39.108.227.206", "zzz", "123456", "Snake")){
+    }
+    else {
+        exit(1);
+    }
+
+    db.ReadData("select * from score order by result desc", g.name, g.rank_score);
     cout << "Send start" << endl;
+    char tmp[20] = {0};
     newsocket.Send(&g.rank_score, sizeof(g.rank_score));
     for(int i = 0; i < 10; ++i)
     {
-        char tmp[20] = {0};
         strcpy(tmp, g.name[i].c_str());
         newsocket.Send(tmp, g.name[i].size() + 1);
+        cout << tmp << endl;
+        usleep(100);
     }
     cout << "Send finish" << endl;
 }

@@ -90,7 +90,7 @@ void GameQuit(Game *game)
 
 int ReadData(Game *game)
 {
-    FILE* fp = fopen("./log/clientLog.log", "a+");
+    FILE* fp = fopen("./log/clientLog.log", "w");
     if(fp == NULL){
         return -1;
     }
@@ -103,6 +103,8 @@ int ReadData(Game *game)
         fprintf(fp, "%s\n", p);
         game->name_list[i] = p;
     }
+    fprintf(fp, "%s\n", "rank mesg recv done");
+    fclose(fp);
 #if 0
     MYSQL my_connection;
     MYSQL_RES *res;
@@ -220,11 +222,10 @@ void GameInit(Game *game)
     game->speed = 10;
 
     SnakeInit(&game->snake);
-    ReadData(game);
     game->highest_score = game->score_list[0];
 
-    game->food.x = 0;
-    game->food.y = 0;
+    game->food.x = -1;
+    game->food.y = -1;
 
     RefreshMap(game);
 }
@@ -538,11 +539,16 @@ void *show(void *arg)
 
 void *run(void *arg)
 {
+    
+    FILE *fp = fopen("./log/clientLog.log", "a+");
+    fprintf(fp, "game run\n");
     Game *game = (Game*)arg;
     Position NextPos;
 //    game->food = Generatefood(game);
     bool isOver = false;
     Recv(game->sockfd, &game->food, sizeof(game->food));
+    fprintf(fp, "food:%d %d\n", game->food.x, game->food.y);
+    
     while(!isOver)
     {
         pthread_rwlock_wrlock(&rwlock);

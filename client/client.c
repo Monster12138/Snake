@@ -8,8 +8,8 @@ void menu(Game *game)
     }
 
 
+    ReadData(game);
     GameInit(game);
-    //ReadData(game);
     char ch = 1;
     while(ch != '0')
     {
@@ -48,9 +48,9 @@ void menu(Game *game)
 int main()
 {
     uint16_t port = 8888;
-    char ip[] = "172.29.40.7";        
+    //char ip[] = "172.29.40.7";        
     //char ip[] = "192.168.43.137";
-    //char ip[] = "192.168.1.108";
+    char ip[] = "192.168.1.108";
 
     GameMode();
 
