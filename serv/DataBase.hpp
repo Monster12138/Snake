@@ -80,7 +80,7 @@ public:
 
         while(i < 10)
         {
-            if(row = mysql_fetch_row(res)){
+            if((row = mysql_fetch_row(res))){
                 name[i].assign(row[0]);
                 sscanf(row[1], "%u", &score[i]);
             }

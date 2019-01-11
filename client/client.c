@@ -6,10 +6,19 @@ bool ReadConfig(Game *game, char *ip, uint16_t *port)
     if(NULL == fp){
         return -1;
     }
-    while(fscanf(fp, "%s", ip))
+    char lvalue[30] = {0};
+    while(fscanf(fp, "%s", lvalue) != EOF)
     {
-        fscanf(fp, "%s", ip);
-        fscanf(fp, "%s", ip);
+        if(0 == strcmp(lvalue, "server_addr"))
+        {
+            fscanf(fp, "%s", lvalue);
+            fscanf(fp, "%s", ip);
+        }
+        else if(0 == strcmp(lvalue, "port"))
+        {
+            fscanf(fp, "%s", lvalue);
+            fscanf(fp, "%hu", port);
+        }
     }
     fclose(fp);
 }
@@ -67,9 +76,11 @@ int main()
     char ip[] = "172.29.40.7";        
     //char ip[] = "192.168.43.137";
     //char ip[] = "192.168.1.108";
+    
     GameMode();
 
     Game g;
+    ReadConfig(&g, ip, &port);
     g.sockfd = create_socket();
     Connect(g.sockfd, ip, port);
     srand((unsigned int)time(NULL));
