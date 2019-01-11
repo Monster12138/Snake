@@ -19,6 +19,7 @@ bool ReadConfig(Game *game, char *ip, uint16_t *port)
             fscanf(fp, "%s", lvalue);
             fscanf(fp, "%hu", port);
         }
+        memset(lvalue, 0, sizeof(lvalue));
     }
     fclose(fp);
 }
@@ -71,9 +72,9 @@ void menu(Game *game)
 int main()
 {
     uint16_t port = 8888;
-    //char ip[20] = {0};
+    char ip[20] = {0};
     //char ip[] = "39.108.227.206";        
-    char ip[] = "172.29.40.7";        
+    //char ip[] = "172.29.40.7";        
     //char ip[] = "192.168.43.137";
     //char ip[] = "192.168.1.108";
     

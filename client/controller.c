@@ -217,7 +217,7 @@ Position Generatefood(Game *game)
 void MapInit(Game *game)
 {
     game->width = 28;
-    game->height = 27;
+    game->height = 28;
 }
 
 //游戏初始化
