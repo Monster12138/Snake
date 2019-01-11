@@ -2,6 +2,7 @@
 
 bool ReadConfig(Game *game, char *ip, uint16_t *port)
 {
+    FILE* fp1 = fopen("./log/clientLog.log", "a");
     FILE* fp = fopen("client_conf.ini", "r");
     if(NULL == fp){
         return -1;
@@ -21,6 +22,8 @@ bool ReadConfig(Game *game, char *ip, uint16_t *port)
         }
         memset(lvalue, 0, sizeof(lvalue));
     }
+    fprintf(fp1, "ip = %s\n", ip);
+    fclose(fp1);
     fclose(fp);
 }
 
@@ -82,10 +85,11 @@ int main()
 
     Game g;
     ReadConfig(&g, ip, &port);
+    MapInit(&g);  
+    srand((unsigned int)time(NULL));
+
     g.sockfd = create_socket();
     Connect(g.sockfd, ip, port);
-    srand((unsigned int)time(NULL));
-    MapInit(&g);  
     menu(&g);
 
     close(g.sockfd);
