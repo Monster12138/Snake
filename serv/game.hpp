@@ -30,8 +30,8 @@ public:
     {
         int x, y;
         do{
-            x = rand()%width;
-            y = rand()%height;
+            x = rand()%(width - 1) + 1;
+            y = rand()%(height - 1) + 1;
         }while(snake.isOnSnake(x, y));
         food.setPos(x, y);
     }
@@ -39,7 +39,7 @@ public:
     void init()
     {
         width = 28;
-        height = 27;
+        height = 28;
         highest_score = 0;
         
         freshFood();
