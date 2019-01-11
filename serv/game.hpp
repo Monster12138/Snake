@@ -30,8 +30,8 @@ public:
     {
         int x, y;
         do{
-            x = rand()%width + 1;
-            y = rand()%height + 1;
+            x = rand()%width;
+            y = rand()%height;
         }while(snake.isOnSnake(x, y));
         food.setPos(x, y);
     }

@@ -213,19 +213,24 @@ Position Generatefood(Game *game)
     return newfood;
 }
 
-//游戏初始化
-void GameInit(Game *game)
+//地图初始化
+void MapInit(Game *game)
 {
     game->width = 28;
     game->height = 27;
+}
+
+//游戏初始化
+void GameInit(Game *game)
+{
+
     game->score = 0;
     game->speed = 10;
 
     SnakeInit(&game->snake);
     game->highest_score = game->score_list[0];
 
-    game->food.x = -1;
-    game->food.y = -1;
+    Recv(game->sockfd, &game->food, sizeof(game->food));
 
     RefreshMap(game);
 }
@@ -492,7 +497,6 @@ void *KeyBoardListener(void *arg)
         if(input == game->snake.Dir){
             game->speed = 3;
         }
-        //else if(input == LEFT || input == RIGHT || input == UP || input == DOWN || input == PAUSE){
         else{
             game->speed = SpeedCtrl(game->snake.length);
         }
@@ -511,7 +515,6 @@ void *KeyBoardListener(void *arg)
         }
         pthread_rwlock_unlock(&rwlock);
     }
-    //DisPlayMessage(game, "Listener exit!");
     return NULL;
 }
 
@@ -546,8 +549,6 @@ void *run(void *arg)
     Position NextPos;
 //    game->food = Generatefood(game);
     bool isOver = false;
-    Recv(game->sockfd, &game->food, sizeof(game->food));
-    fprintf(fp, "food:%d %d\n", game->food.x, game->food.y);
     
     while(!isOver)
     {
@@ -560,6 +561,8 @@ void *run(void *arg)
 
         if(IsEat(&game->food, &game->snake)){
             Recv(game->sockfd, &game->food, sizeof(game->food));
+            fprintf(fp, "foodx:%d  foody:%d\n", game->food.x, game->food.y);
+
             game->score+=10;
             game->snake.length++;
         }

@@ -43,7 +43,7 @@ void DisPlayWall(int width,int height)
 
 void DisPlayFood(Position *pos)
 {
-    MOVETO(pos->x,2*pos->y);
+    MOVETO(pos->x + 1,2*pos->y);
 
     printf("\033[47;32m");
     printf("★ ");

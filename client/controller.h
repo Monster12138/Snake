@@ -51,6 +51,9 @@ bool IsOverLap(Position pos,Snake *pSnake);
 //随机刷新食物
 Position Generatefood(Game *game);
 
+//地图初始化
+void MapInit(Game *game);
+
 //初始化游戏
 void GameInit(Game *game);
 

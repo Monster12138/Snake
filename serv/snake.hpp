@@ -88,6 +88,7 @@ public:
 
     bool isOnSnake(int x, int y)
     {
+        if(x == 0 || y == 0)return true;
         auto it = l.begin();
         ++it;
         for(; it != l.end(); ++it)
