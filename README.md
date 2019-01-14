@@ -23,3 +23,4 @@ cd ./Snake/client
 ```
 ./client
 ```
+注意：服务器地址可以在Snake/client/client_contig.ini配置中修改，服务器地址项是server_addr
